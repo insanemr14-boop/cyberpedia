@@ -67,7 +67,7 @@ const featuredCategories = [
                 title={CONTENT_TYPES.news.plural}
                 id="home-news"
                 description={CONTENT_TYPES.news.description}
-                href="/news"
+                href="/news/"
               />
               <div class="grid gap-5 sm:grid-cols-2">
                 {latestNews.map((article) => (
@@ -86,7 +86,7 @@ const featuredCategories = [
                 title="Editor's Picks"
                 id="home-picks"
                 description="The pieces we would hand a new engineer on their first week."
-                href="/articles"
+                href="/articles/"
               />
               <div class="grid gap-5 sm:grid-cols-3">
                 {picks.map((article) => (
@@ -105,7 +105,7 @@ const featuredCategories = [
                 title={CONTENT_TYPES.review.plural}
                 id="home-reviews"
                 description={CONTENT_TYPES.review.description}
-                href="/reviews"
+                href="/reviews/"
               />
               <div class="space-y-4">
                 {latestReviews.map((article) => (
@@ -158,7 +158,7 @@ const featuredCategories = [
         title="Browse by Topic"
                 id="home-categories"
         description="Every article is filed under a topic so you can go deep on one area."
-        href="/categories"
+        href="/categories/"
         linkLabel="All topics"
       />
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

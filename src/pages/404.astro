@@ -35,10 +35,10 @@ const recent = (await getPublishedArticles()).slice(0, 3);
         {
           [
             { label: 'Home', href: '/' },
-            { label: 'Latest News', href: '/news' },
-            { label: 'Guides', href: '/guides' },
-            { label: 'Reviews', href: '/reviews' },
-            { label: 'All Categories', href: '/categories' },
+            { label: 'Latest News', href: '/news/' },
+            { label: 'Guides', href: '/guides/' },
+            { label: 'Reviews', href: '/reviews/' },
+            { label: 'All Categories', href: '/categories/' },
           ].map((link) => (
             <a
               href={link.href}

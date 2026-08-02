@@ -168,11 +168,11 @@ export const SITE: SiteConfig = {
 
 /** Primary navigation. Rendered in the navbar and mobile drawer. */
 export const MAIN_NAV = [
-  { label: 'News', href: '/news' },
-  { label: 'Guides', href: '/guides' },
-  { label: 'Reviews', href: '/reviews' },
-  { label: 'Categories', href: '/categories' },
-  { label: 'Articles', href: '/articles' },
+  { label: 'News', href: '/news/' },
+  { label: 'Guides', href: '/guides/' },
+  { label: 'Reviews', href: '/reviews/' },
+  { label: 'Categories', href: '/categories/' },
+  { label: 'Articles', href: '/articles/' },
 ] as const;
 
 /** Footer link groups. */
@@ -180,19 +180,19 @@ export const FOOTER_NAV = [
   {
     heading: 'Content',
     links: [
-      { label: 'Latest News', href: '/news' },
-      { label: 'Guides', href: '/guides' },
-      { label: 'Reviews', href: '/reviews' },
-      { label: 'All Articles', href: '/articles' },
-      { label: 'Categories', href: '/categories' },
+      { label: 'Latest News', href: '/news/' },
+      { label: 'Guides', href: '/guides/' },
+      { label: 'Reviews', href: '/reviews/' },
+      { label: 'All Articles', href: '/articles/' },
+      { label: 'Categories', href: '/categories/' },
     ],
   },
   {
     heading: 'Publication',
     links: [
-      { label: 'About', href: '/about' },
-      { label: 'Editorial Policy', href: '/editorial-policy' },
-      { label: 'Contact', href: '/contact' },
+      { label: 'About', href: '/about/' },
+      { label: 'Editorial Policy', href: '/editorial-policy/' },
+      { label: 'Contact', href: '/contact/' },
       { label: 'RSS Feed', href: '/rss.xml' },
       { label: 'Sitemap', href: '/sitemap.xml' },
     ],
@@ -200,10 +200,10 @@ export const FOOTER_NAV = [
   {
     heading: 'Legal',
     links: [
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms of Use', href: '/terms' },
-      { label: 'Cookie Policy', href: '/cookie-policy' },
-      { label: 'Disclaimer', href: '/disclaimer' },
+      { label: 'Privacy Policy', href: '/privacy-policy/' },
+      { label: 'Terms of Use', href: '/terms/' },
+      { label: 'Cookie Policy', href: '/cookie-policy/' },
+      { label: 'Disclaimer', href: '/disclaimer/' },
     ],
   },
 ] as const;
@@ -234,28 +234,28 @@ export const CONTENT_TYPES = {
   news: {
     label: 'News',
     plural: 'Latest News',
-    href: '/news',
+    href: '/news/',
     description:
       'Breaking cybersecurity news, vulnerability disclosures and incident reporting as it develops.',
   },
   guide: {
     label: 'Guide',
     plural: 'Guides',
-    href: '/guides',
+    href: '/guides/',
     description:
       'Step-by-step defensive guides and implementation walkthroughs written for practitioners.',
   },
   review: {
     label: 'Review',
     plural: 'Reviews',
-    href: '/reviews',
+    href: '/reviews/',
     description:
       'Independent evaluations of security tooling, architectures and vendor categories.',
   },
   analysis: {
     label: 'Analysis',
     plural: 'Analysis',
-    href: '/articles',
+    href: '/articles/',
     description: 'Deep technical analysis of threats, techniques and security architecture.',
   },
 } as const;
