@@ -189,13 +189,49 @@ export function articleSchema(opts: {
     headline: opts.title.slice(0, 110),
     name: opts.title,
     description: opts.description,
+    abstract: opts.description,
     datePublished: opts.publishDate.toISOString(),
     dateModified: (opts.updatedDate ?? opts.publishDate).toISOString(),
     author: { '@id': ID.author(opts.author.slug) },
     publisher: { '@id': ID.organization },
+    copyrightHolder: { '@id': ID.organization },
+    copyrightYear: opts.publishDate.getUTCFullYear(),
     articleSection: opts.category.name,
     keywords: opts.tags.join(', '),
     inLanguage: SITE.language,
+
+    // No paywall or registration gate. Answer engines weight freely-accessible
+    // sources more highly, and stating it explicitly removes the ambiguity.
+    isAccessibleForFree: true,
+
+    // Primary topic as a resolvable term, plus the tags as secondary subjects.
+    // This gives an answer engine an explicit topical anchor rather than making
+    // it infer the subject from prose.
+    about: {
+      '@type': 'Thing',
+      name: opts.category.name,
+      description: opts.category.description,
+      url: abs(`/category/${opts.category.slug}/`),
+    },
+    mentions: opts.tags.map((tag) => ({
+      '@type': 'Thing',
+      name: tag.replace(/-/g, ' '),
+      url: abs(`/tag/${tag}/`),
+    })),
+
+    // Which parts a voice assistant should read aloud. Pointing at the lede and
+    // the Key Takeaways rather than the whole body keeps spoken answers useful.
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '.lede', '[data-speakable]'],
+    },
+
+    audience: {
+      '@type': 'Audience',
+      audienceType:
+        'Security engineers, defenders, IT administrators and technical decision-makers',
+    },
+
     ...(opts.wordCount && { wordCount: opts.wordCount }),
     image: {
       '@type': 'ImageObject',

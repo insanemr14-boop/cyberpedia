@@ -125,7 +125,12 @@ const crumbs = [
             {data.title}
           </h1>
 
-          <p class="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--text-muted)]">
+          {/* `lede` is referenced by the speakable schema — voice assistants
+              read this paragraph as the article summary. */}
+          <p
+            class="lede mt-4 max-w-3xl text-lg leading-relaxed text-[var(--text-muted)]"
+            data-speakable
+          >
             {data.description}
           </p>
 

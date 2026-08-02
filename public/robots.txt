@@ -48,3 +48,6 @@ User-agent: MJ12bot
 Disallow: /
 
 Sitemap: https://cyberpedia.qd.je/sitemap.xml
+
+# Structured site summary for AI crawlers and answer engines (llmstxt.org)
+# LLM-Content: https://cyberpedia.qd.je/llms.txt
