@@ -111,7 +111,7 @@ export const SITE: SiteConfig = {
   // Populate these to activate the corresponding provider. Empty = disabled.
   analytics: {
     googleAnalyticsId: '',
-    googleSearchConsoleVerification: '',
+    googleSearchConsoleVerification: 'REfhXaG6pnK53a3U7-XFJfPqEamF7fDx1AY0_a7zviM',
     microsoftClarityId: '',
     cloudflareAnalyticsToken: '',
   },
