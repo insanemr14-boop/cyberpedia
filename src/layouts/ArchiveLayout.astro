@@ -30,6 +30,11 @@ interface Props {
   accent?: string;
   eyebrow?: string;
   emptyMessage?: string;
+  /**
+   * Force noindex regardless of pagination — used for archives too thin to be
+   * worth indexing. Links are still followed, so equity reaches the articles.
+   */
+  noindex?: boolean;
 }
 
 const {
@@ -44,14 +49,20 @@ const {
   accent,
   eyebrow,
   emptyMessage = 'No articles have been published in this section yet.',
+  noindex: forceNoindex = false,
 } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const canonicalBase = paginationBase ?? path;
 
-// Page 2+ of an archive is thin, near-duplicate content. Keep it crawlable
-// (links flow through) but out of the index.
-const noindex = currentPage > 1;
+// Two reasons to keep an archive out of the index, both noindex,follow so link
+// equity still reaches the articles:
+//   - Page 2+ is thin, near-duplicate content.
+//   - The archive itself is below the content threshold (see INDEX_THRESHOLDS).
+//     With 15 articles across 25 categories and 74 tags, most archives list a
+//     single post; indexing ~99 near-empty listing pages against 15 real ones
+//     is textbook index bloat.
+const noindex = currentPage > 1 || forceNoindex;
 
 const prev =
   currentPage > 1

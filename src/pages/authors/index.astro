@@ -1,0 +1,136 @@
+---
+/**
+ * Author index.
+ *
+ * This page previously did not exist, which meant /authors/ returned a 404 —
+ * the exact URL a sceptical reader or a search quality rater visits first to
+ * answer "who is responsible for this content". For a publication that
+ * deliberately uses organisational authorship, that dead end undermined the
+ * whole trust model.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { AUTHORS } from '../../config/authors';
+import { SITE } from '../../config/site.config';
+import { getArticlesByAuthor, formatDateShort } from '../../lib/articles';
+import { breadcrumbSchema, collectionPageSchema } from '../../lib/schema';
+
+const desks = await Promise.all(
+  AUTHORS.map(async (author) => {
+    const articles = await getArticlesByAuthor(author.slug);
+    return { author, count: articles.length, latest: articles[0] };
+  })
+);
+
+const total = desks.reduce((sum, d) => sum + d.count, 0);
+
+const title = 'Editorial Desks';
+const description = `Who writes ${SITE.name}. Articles are attributed to the editorial desk responsible for them, each accountable for technical review in its subject area.`;
+
+const path = '/authors';
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Editorial Desks', href: '/authors/' },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  schemaNodes={[
+    collectionPageSchema({
+      path,
+      title,
+      description,
+      items: AUTHORS.map((a) => ({ name: a.name, href: `/authors/${a.slug}/` })),
+    }),
+    breadcrumbSchema(path, crumbs),
+  ]}
+>
+  <div class="container-page py-10 sm:py-14">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="max-w-3xl">
+      <p class="mb-2 text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
+        Authorship
+      </p>
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+      >
+        {title}
+      </h1>
+      <p class="mt-4 text-lg leading-relaxed text-[var(--text-muted)]">
+        {SITE.name} attributes articles to the editorial desk that produced them rather
+        than to individual bylines. Each desk is accountable for accuracy and technical
+        review within its subject area.
+      </p>
+      <p class="mt-3 text-sm text-[var(--text-subtle)]">
+        {AUTHORS.length} desks &middot; {total} published {total === 1 ? 'article' : 'articles'}
+      </p>
+    </header>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-2">
+      {
+        desks.map(({ author, count, latest }) => (
+          <article class="surface flex flex-col gap-4 p-5 sm:p-6">
+            <div class="flex items-center gap-3">
+              <span
+                class="grid size-12 shrink-0 place-items-center rounded-full text-sm font-bold text-white"
+                style={`background:${author.accent}`}
+                aria-hidden="true"
+              >
+                {author.initials}
+              </span>
+              <div class="min-w-0">
+                <h2 class="text-base font-bold text-[var(--text)]">
+                  <a
+                    href={`/authors/${author.slug}/`}
+                    class="hover:text-[var(--color-primary)]"
+                  >
+                    {author.name}
+                  </a>
+                </h2>
+                <p class="text-xs text-[var(--text-subtle)]">{author.role}</p>
+              </div>
+            </div>
+
+            <p class="text-sm leading-relaxed text-[var(--text-muted)]">{author.bio}</p>
+
+            <div class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-xs text-[var(--text-subtle)]">
+              <span>{count} {count === 1 ? 'article' : 'articles'}</span>
+              {latest && (
+                <>
+                  <span aria-hidden="true">&middot;</span>
+                  <span>Latest {formatDateShort(latest.data.publishDate)}</span>
+                </>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="prose mt-12">
+      <h2>How attribution works here</h2>
+      <p>
+        Organisational authorship is a deliberate choice, not a way to stay anonymous.
+        Inventing individual journalists with fabricated credentials is precisely what
+        search quality guidelines penalise, and it misleads readers about who stands
+        behind a technical claim. Wire services and consumer testing organisations
+        publish under desks for the same reason.
+      </p>
+      <p>
+        What makes that legitimate is a verifiable operator and a published standard.
+        {SITE.name} is operated by {SITE.organization.legalName} in
+        {' '}{SITE.organization.address.locality}, {SITE.organization.address.country}, and
+        every article is held to our <a href="/editorial-policy">editorial policy</a>:
+        primary-source verification, no paid coverage, no invented statistics, and
+        corrections noted on the article itself.
+      </p>
+      <p>
+        If something we published is wrong, tell us via the
+        {' '}<a href="/contact">contact page</a> and we will correct it.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

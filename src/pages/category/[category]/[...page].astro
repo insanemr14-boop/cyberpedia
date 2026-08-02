@@ -3,7 +3,7 @@ import type { GetStaticPaths, Page } from 'astro';
 import ArchiveLayout from '../../../layouts/ArchiveLayout.astro';
 import { CATEGORIES, type Category } from '../../../config/categories';
 import { getPublishedArticles, type Article } from '../../../lib/articles';
-import { SITE } from '../../../config/site.config';
+import { SITE, INDEX_THRESHOLDS } from '../../../config/site.config';
 
 export const getStaticPaths = (async ({ paginate }) => {
   const articles = await getPublishedArticles();
@@ -12,7 +12,9 @@ export const getStaticPaths = (async ({ paginate }) => {
     const inCategory = articles.filter((a) => a.data.category === category.slug);
     return paginate(inCategory, {
       params: { category: category.slug },
-      props: { category },
+      // `total` is the count across the whole category, not just this page —
+      // the indexing decision is about the category, not the pagination slice.
+      props: { category, total: inCategory.length },
       pageSize: SITE.pagination.categoryPerPage,
     });
   });
@@ -21,9 +23,12 @@ export const getStaticPaths = (async ({ paginate }) => {
 interface Props {
   page: Page<Article>;
   category: Category;
+  total: number;
 }
 
-const { page, category } = Astro.props;
+const { page, category, total } = Astro.props;
+
+const thin = total < INDEX_THRESHOLDS.category;
 ---
 
 <ArchiveLayout
@@ -35,6 +40,7 @@ const { page, category } = Astro.props;
   currentPage={page.currentPage}
   lastPage={page.lastPage}
   paginationBase={`/category/${category.slug}`}
+  noindex={thin}
   emptyMessage={`No ${category.name} articles have been published yet. This topic is on the editorial roadmap.`}
   crumbs={[
     { name: 'Home', href: '/' },

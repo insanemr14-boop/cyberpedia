@@ -9,7 +9,7 @@
 
 import { SITE } from '../config/site.config';
 import type { Author } from '../config/authors';
-import type { Category } from '../config/categories';
+import { CATEGORIES, type Category } from '../config/categories';
 
 const abs = (path: string) => new URL(path, SITE.url).toString();
 
@@ -64,6 +64,15 @@ export function organizationSchema() {
         closes: '19:00',
       },
     },
+    // Declares the subject areas this publication claims competence in, so
+    // topical authority is stated explicitly rather than inferred from article
+    // volume. Driven by the same taxonomy that powers the category pages, so
+    // the claim and the content can never drift apart.
+    knowsAbout: CATEGORIES.map((c) => c.name),
+
+    publishingPrinciples: abs('/editorial-policy/'),
+    ethicsPolicy: abs('/editorial-policy/'),
+
     logo: {
       '@type': 'ImageObject',
       '@id': `${SITE.url}/#logo`,

@@ -208,6 +208,27 @@ export const FOOTER_NAV = [
   },
 ] as const;
 
+/**
+ * Minimum articles an archive needs before it is worth indexing.
+ *
+ * Archives below the threshold are served `noindex, follow` and kept out of the
+ * sitemap. They remain fully browsable and still pass link equity to the
+ * articles — they simply do not compete as landing pages while they are thin.
+ *
+ * The problem being solved: 25 category + 74 tag pages against 15 articles is a
+ * ~6.6:1 ratio of listing pages to real content. Indexing all of them dilutes
+ * the site's content-to-noise ratio, which is precisely the pattern the
+ * helpful-content system penalises.
+ *
+ * Raise these as the archive grows — an archive earns indexing when it reads as
+ * a genuine topic hub rather than a wrapper around one post.
+ */
+export const INDEX_THRESHOLDS = {
+  category: 3,
+  tag: 4,
+  author: 1,
+} as const;
+
 /** Content types drive the /news, /guides and /reviews surfaces. */
 export const CONTENT_TYPES = {
   news: {

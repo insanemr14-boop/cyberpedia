@@ -57,6 +57,7 @@ All content is written for defensive and educational security purposes.
 **Contact:** ${SITE.organization.email}
 **Feed:** ${abs('/rss.xml')}
 **Sitemap:** ${abs('/sitemap.xml')}
+**Full content in one fetch:** ${abs('/llms-full.txt')}
 
 ## About this publication
 

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { SITE } from '../config/site.config';
+import { SITE, INDEX_THRESHOLDS } from '../config/site.config';
 import { CATEGORIES } from '../config/categories';
 import { AUTHORS } from '../config/authors';
 import {
@@ -91,10 +91,13 @@ export const GET: APIRoute = async () => {
     });
   }
 
-  // ---------- Category archives (only those with content) ----------
+  // ---------- Category archives ----------
+  // Only categories at or above the indexing threshold. Thin archives are
+  // served noindex,follow, and listing a noindex URL in a sitemap is a
+  // contradictory signal — the two must agree.
   for (const category of CATEGORIES) {
     const inCategory = await getArticlesByCategory(category.slug);
-    if (!inCategory.length) continue;
+    if (inCategory.length < INDEX_THRESHOLDS.category) continue;
     entries.push({
       loc: url(`/category/${category.slug}/`),
       lastmod: newest(inCategory),
@@ -104,6 +107,15 @@ export const GET: APIRoute = async () => {
   }
 
   // ---------- Author archives ----------
+  // The /authors/ hub answers "who is responsible for this content" — a page
+  // both readers and quality raters look for, so it belongs in the sitemap.
+  entries.push({
+    loc: url('/authors/'),
+    lastmod: latest,
+    changefreq: 'monthly',
+    priority: 0.6,
+  });
+
   for (const author of AUTHORS) {
     const byAuthor = await getArticlesByAuthor(author.slug);
     if (!byAuthor.length) continue;
@@ -116,9 +128,11 @@ export const GET: APIRoute = async () => {
   }
 
   // ---------- Tag archives ----------
+  // Same threshold rule as categories. At current volume most tags match a
+  // single article, so this excludes the majority by design.
   for (const { tag } of tags) {
     const tagged = await getArticlesByTag(tag);
-    if (!tagged.length) continue;
+    if (tagged.length < INDEX_THRESHOLDS.tag) continue;
     entries.push({
       loc: url(`/tag/${tag}/`),
       lastmod: newest(tagged),
