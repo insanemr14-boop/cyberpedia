@@ -1,0 +1,19 @@
+---
+/**
+ * Emits a single connected JSON-LD @graph document.
+ *
+ * One <script> per page rather than several disconnected blocks: nodes
+ * reference each other by @id, which is what lets Google resolve the
+ * Organization -> WebSite -> WebPage -> Article chain.
+ */
+interface Props {
+  schema: object;
+}
+const { schema } = Astro.props;
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(schema)}
+/>

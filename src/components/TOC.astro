@@ -1,0 +1,139 @@
+---
+/**
+ * Table of contents with scroll-spy.
+ *
+ * Multi-instance safe by design: article pages render this twice (inline on
+ * narrow viewports, in the sidebar on wide ones), so the heading id is
+ * namespaced per instance and the scroll-spy highlights *every* link that
+ * points at the active heading rather than only the first one it finds.
+ *
+ * The active-heading logic uses IntersectionObserver rather than a scroll
+ * handler, so it costs nothing on the main thread while scrolling.
+ */
+import type { MarkdownHeading } from 'astro';
+import { buildToc } from '../lib/toc';
+
+interface Props {
+  headings: MarkdownHeading[];
+  /** Distinguishes this instance from any other TOC on the page. */
+  instance?: string;
+  class?: string;
+}
+
+const { headings, instance = 'main', class: className = '' } = Astro.props;
+const toc = buildToc(headings);
+const headingId = `toc-heading-${instance}`;
+---
+
+{
+  toc.length > 1 && (
+    <nav aria-labelledby={headingId} class={`toc ${className}`}>
+      <h2
+        id={headingId}
+        class="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--text)]"
+      >
+        On this page
+      </h2>
+
+      <ul class="space-y-1 border-l border-[var(--border)] text-sm">
+        {toc.map((node) => (
+          <>
+            <li>
+              <a
+                href={`#${node.slug}`}
+                data-toc-link={node.slug}
+                class="-ml-px block border-l-2 border-transparent py-1 pl-3
+                       text-[var(--text-muted)] transition-colors
+                       hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+              >
+                {node.text}
+              </a>
+            </li>
+            {node.children.map((child) => (
+              <li>
+                <a
+                  href={`#${child.slug}`}
+                  data-toc-link={child.slug}
+                  class="-ml-px block border-l-2 border-transparent py-1 pl-6
+                         text-[0.8rem] text-[var(--text-subtle)] transition-colors
+                         hover:border-[var(--border-strong)] hover:text-[var(--text)]"
+                >
+                  {child.text}
+                </a>
+              </li>
+            ))}
+          </>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc a[data-active='true'] {
+    border-left-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+
+  if (links.length) {
+    // A slug can map to several links because the TOC is rendered more than
+    // once. Group them so every copy highlights together.
+    const linksBySlug = new Map<string, HTMLAnchorElement[]>();
+    links.forEach((link) => {
+      const slug = link.dataset.tocLink;
+      if (!slug) return;
+      const group = linksBySlug.get(slug);
+      if (group) group.push(link);
+      else linksBySlug.set(slug, [link]);
+    });
+
+    // Preserve document order so "last heading scrolled past" is meaningful.
+    const headings = [...linksBySlug.keys()]
+      .map((slug) => document.getElementById(slug))
+      .filter((el): el is HTMLElement => el !== null)
+      .sort((a, b) => a.offsetTop - b.offsetTop);
+
+    let activeSlug: string | null = null;
+
+    function setActive(slug: string | null) {
+      if (slug === activeSlug) return;
+      if (activeSlug) {
+        linksBySlug.get(activeSlug)?.forEach((l) => l.removeAttribute('data-active'));
+      }
+      if (slug) {
+        linksBySlug.get(slug)?.forEach((l) => l.setAttribute('data-active', 'true'));
+      }
+      activeSlug = slug;
+    }
+
+    const visible = new Set<string>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
+        }
+
+        const firstVisible = headings.find((h) => visible.has(h.id));
+        if (firstVisible) {
+          setActive(firstVisible.id);
+        } else {
+          const scrolledPast = headings.filter(
+            (h) => h.getBoundingClientRect().top < 120
+          );
+          setActive(scrolledPast.at(-1)?.id ?? null);
+        }
+      },
+      // Reading zone: just under the sticky navbar, down to 60% of viewport.
+      { rootMargin: '-96px 0px -40% 0px', threshold: 0 }
+    );
+
+    headings.forEach((heading) => observer.observe(heading));
+  }
+</script>

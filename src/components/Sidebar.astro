@@ -1,0 +1,47 @@
+---
+/**
+ * Article sidebar: sticky table of contents, trending list and newsletter.
+ * Hidden below `xl` — on narrow viewports the TOC is rendered inline by the
+ * article layout instead, so the content is never lost, only relocated.
+ */
+import type { MarkdownHeading } from 'astro';
+import type { Article } from '../lib/articles';
+import { SITE } from '../config/site.config';
+import TOC from './TOC.astro';
+import ArticleCard from './ArticleCard.astro';
+import Newsletter from './Newsletter.astro';
+
+interface Props {
+  headings?: MarkdownHeading[];
+  trending?: Article[];
+  class?: string;
+}
+
+const { headings = [], trending = [], class: className = '' } = Astro.props;
+---
+
+<aside class={className} aria-label="Article sidebar">
+  <div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-8 overflow-y-auto pb-8">
+    {headings.length > 0 && <TOC headings={headings} instance="sidebar" />}
+
+    {
+      trending.length > 0 && (
+        <section aria-labelledby="sidebar-trending">
+          <h2
+            id="sidebar-trending"
+            class="mb-3 text-xs font-bold uppercase tracking-wider text-[var(--text)]"
+          >
+            Trending
+          </h2>
+          <div class="space-y-4">
+            {trending.map((article) => (
+              <ArticleCard article={article} variant="compact" headingLevel={3} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {SITE.features.newsletter && <Newsletter variant="inline" />}
+  </div>
+</aside>

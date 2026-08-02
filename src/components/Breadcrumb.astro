@@ -1,0 +1,55 @@
+---
+/**
+ * Breadcrumb trail. The matching BreadcrumbList JSON-LD is emitted by the
+ * layout from the same `items` array, so the visible trail and the structured
+ * data can never drift apart.
+ */
+import type { BreadcrumbItem } from '../lib/schema';
+
+interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class={className}>
+  <ol class="flex flex-wrap items-center gap-1.5 text-xs text-[var(--text-subtle)]">
+    {
+      items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        return (
+          <li class="flex items-center gap-1.5">
+            {isLast ? (
+              <span class="clamp-2 font-medium text-[var(--text-muted)]" aria-current="page">
+                {item.name}
+              </span>
+            ) : (
+              <a
+                href={item.href}
+                class="transition-colors hover:text-[var(--color-primary)]"
+              >
+                {item.name}
+              </a>
+            )}
+            {!isLast && (
+              <svg
+                class="size-3 shrink-0 opacity-50"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>

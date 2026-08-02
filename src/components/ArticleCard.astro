@@ -1,0 +1,146 @@
+---
+/**
+ * The single article card used across every surface.
+ *
+ * `variant` changes density, not structure — one component, no duplicated
+ * markup between the home page, archives and sidebars.
+ *   featured — large hero card with artwork
+ *   default  — standard grid card with artwork
+ *   compact  — image-free row for sidebars and dense lists
+ *   list     — horizontal row with thumbnail for archives
+ */
+import type { Article } from '../lib/articles';
+import { readingTimeOf, slugOf, formatDateShort } from '../lib/articles';
+import { CONTENT_TYPES } from '../config/site.config';
+import CategoryChip from './CategoryChip.astro';
+import HeroArt from './HeroArt.astro';
+
+interface Props {
+  article: Article;
+  variant?: 'featured' | 'default' | 'compact' | 'list';
+  /** Set true for above-the-fold cards so the heading is an h2, not h3. */
+  headingLevel?: 2 | 3;
+  class?: string;
+}
+
+const {
+  article,
+  variant = 'default',
+  headingLevel = 3,
+  class: className = '',
+} = Astro.props;
+
+const { title, excerpt, category, publishDate, type, heroImage, heroAlt } =
+  article.data;
+const slug = slugOf(article);
+const href = `/articles/${slug}/`;
+const minutes = readingTimeOf(article);
+const typeLabel = CONTENT_TYPES[type].label;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+
+const isFeatured = variant === 'featured';
+const isCompact = variant === 'compact';
+const isList = variant === 'list';
+const showArt = !isCompact;
+---
+
+<article
+  class:list={[
+    'group relative flex overflow-hidden transition-all duration-200',
+    isCompact
+      ? 'gap-3 border-b border-[var(--border)] pb-4 last:border-0 last:pb-0'
+      : 'surface hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-lg hover:shadow-black/5',
+    isList ? 'flex-row items-stretch' : 'flex-col',
+    className,
+  ]}
+>
+  {/* ---------- Artwork ---------- */}
+  {
+    showArt && (
+      <div
+        class:list={[
+          'relative shrink-0 overflow-hidden bg-[var(--bg-alt)]',
+          isList ? 'w-28 sm:w-44' : isFeatured ? 'aspect-[16/9]' : 'aspect-[16/9]',
+        ]}
+      >
+        {heroImage ? (
+          <img
+            src={heroImage}
+            alt={heroAlt ?? ''}
+            width={isFeatured ? 1200 : 600}
+            height={isFeatured ? 675 : 338}
+            loading={isFeatured ? 'eager' : 'lazy'}
+            decoding="async"
+            class="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div class="size-full transition-transform duration-500 group-hover:scale-[1.03]">
+            <HeroArt
+              category={category}
+              seed={slug}
+              variant={isFeatured ? 'banner' : 'card'}
+            />
+          </div>
+        )}
+
+        <span
+          class="absolute left-3 top-3 rounded-md bg-black/60 px-2 py-0.5 text-[0.65rem]
+                 font-bold uppercase tracking-wider text-white backdrop-blur-sm"
+        >
+          {typeLabel}
+        </span>
+      </div>
+    )
+  }
+
+  {/* ---------- Body ---------- */}
+  <div
+    class:list={[
+      'flex min-w-0 flex-1 flex-col',
+      isCompact ? '' : isFeatured ? 'p-5 sm:p-6' : 'p-4 sm:p-5',
+    ]}
+  >
+    {!isCompact && <CategoryChip category={category} class="mb-2.5 self-start" />}
+
+    <Heading
+      class:list={[
+        'font-bold leading-snug tracking-tight text-[var(--text)]',
+        isFeatured ? 'text-xl sm:text-2xl' : isCompact ? 'text-sm' : 'text-base sm:text-lg',
+      ]}
+    >
+      {/* Stretched link: the whole card is clickable, but only one link is
+          exposed to assistive tech and the URL is still copyable. */}
+      <a
+        href={href}
+        class="after:absolute after:inset-0 after:content-[''] group-hover:text-[var(--color-primary)]
+               transition-colors"
+      >
+        <span class={isFeatured ? 'clamp-3' : 'clamp-2'}>{title}</span>
+      </a>
+    </Heading>
+
+    {
+      !isCompact && (
+        <p
+          class:list={[
+            'clamp-2 mt-2 text-sm leading-relaxed text-[var(--text-muted)]',
+            isFeatured && 'sm:text-base',
+          ]}
+        >
+          {excerpt}
+        </p>
+      )
+    }
+
+    <div
+      class:list={[
+        'mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3 text-xs text-[var(--text-subtle)]',
+        isCompact && 'pt-1.5',
+      ]}
+    >
+      <time datetime={publishDate.toISOString()}>{formatDateShort(publishDate)}</time>
+      <span aria-hidden="true">&middot;</span>
+      <span>{minutes} min read</span>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import { CATEGORIES, CATEGORY_GROUPS } from '../config/categories';
+import { getCategoryCounts } from '../lib/articles';
+import { breadcrumbSchema, collectionPageSchema } from '../lib/schema';
+import { SITE } from '../config/site.config';
+
+const counts = await getCategoryCounts();
+
+const title = 'All Categories';
+const description = `Browse every topic covered by ${SITE.name} — from cloud and application security to threat intelligence, compliance frameworks and security tooling.`;
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Categories', href: '/categories/' },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  schemaNodes={[
+    collectionPageSchema({
+      path: '/categories',
+      title,
+      description,
+      items: CATEGORIES.map((c) => ({ name: c.name, href: `/category/${c.slug}/` })),
+    }),
+    breadcrumbSchema('/categories', crumbs),
+  ]}
+>
+  <div class="container-page py-8 sm:py-12">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="max-w-3xl">
+      <p class="mb-2 text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">
+        Topics
+      </p>
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+      >
+        {title}
+      </h1>
+      <p class="mt-3 text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+        {CATEGORIES.length} topics across security domains, operations, governance and tooling.
+      </p>
+    </header>
+
+    <div class="mt-10 space-y-14">
+      {
+        CATEGORY_GROUPS.map((group) => {
+          const inGroup = CATEGORIES.filter((c) => c.group === group);
+          return (
+            <section aria-labelledby={`group-${group}`}>
+              <h2
+                id={`group-${group}`}
+                class="mb-5 text-xl font-extrabold tracking-tight text-[var(--text)]"
+              >
+                <span
+                  class="mr-2.5 inline-block h-5 w-1 rounded-full bg-[var(--color-primary)] align-[-2px]"
+                  aria-hidden="true"
+                />
+                {group}
+              </h2>
+              <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {inGroup.map((category) => (
+                  <CategoryCard category={category} count={counts.get(category.slug) ?? 0} />
+                ))}
+              </div>
+            </section>
+          );
+        })
+      }
+    </div>
+  </div>
+</BaseLayout>

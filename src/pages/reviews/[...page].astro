@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { getArticlesByType, type Article } from '../../lib/articles';
+import { SITE, CONTENT_TYPES } from '../../config/site.config';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getArticlesByType('review');
+  return paginate(articles, { pageSize: SITE.pagination.articlesPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Article>;
+}
+
+const { page } = Astro.props;
+---
+
+<ArchiveLayout
+  title={CONTENT_TYPES.review.plural}
+  eyebrow="Reviews"
+  description={CONTENT_TYPES.review.description}
+  lede="Independent evaluations of security tooling and architectures — what each category genuinely does well, and where it falls down."
+  articles={page.data}
+  currentPage={page.currentPage}
+  lastPage={page.lastPage}
+  paginationBase="/reviews"
+  emptyMessage="No reviews have been published yet."
+  crumbs={[
+    { name: 'Home', href: '/' },
+    { name: 'Reviews', href: '/reviews/' },
+  ]}
+/>

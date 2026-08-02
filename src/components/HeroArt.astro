@@ -1,0 +1,93 @@
+---
+/**
+ * Generated hero artwork.
+ *
+ * Every article gets distinctive, category-coloured visual identity without
+ * shipping a single raster image — which means zero image weight, zero layout
+ * shift, and no broken-image states when an author omits `heroImage`.
+ *
+ * The pattern is derived deterministically from the slug, so a given article
+ * always renders the same artwork.
+ */
+import { getCategoryOrFallback } from '../config/categories';
+
+interface Props {
+  category: string;
+  seed: string;
+  /** Controls the density of the decorative grid. */
+  variant?: 'card' | 'banner';
+  class?: string;
+}
+
+const { category, seed, variant = 'card', class: className = '' } = Astro.props;
+const cat = getCategoryOrFallback(category);
+
+// Cheap deterministic hash so artwork is stable across builds.
+let hash = 0;
+for (let i = 0; i < seed.length; i++) {
+  hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+}
+
+const rotate = (hash % 40) - 20;
+const offsetX = hash % 30;
+const offsetY = (hash >> 5) % 30;
+const nodeCount = variant === 'banner' ? 7 : 5;
+
+// Deterministic node positions for the decorative network motif.
+const nodes = Array.from({ length: nodeCount }, (_, i) => {
+  const h = (hash >> (i * 3)) >>> 0;
+  return { cx: 12 + (h % 76), cy: 14 + ((h >> 7) % 72), r: 1.2 + ((h >> 3) % 3) * 0.6 };
+});
+
+const gradId = `g-${seed.replace(/[^a-z0-9]/gi, '')}-${variant}`;
+const uid = `${gradId}-p`;
+---
+
+<svg
+  class={`block h-full w-full ${className}`}
+  viewBox="0 0 100 100"
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={`${cat.name} article artwork`}
+>
+  <defs>
+    <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color={cat.accent} stop-opacity="0.95" />
+      <stop offset="55%" stop-color={cat.accent} stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.92" />
+    </linearGradient>
+    <pattern id={uid} width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M10 0H0V10" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="0.5" />
+    </pattern>
+  </defs>
+
+  <rect width="100" height="100" fill={gradId ? `url(#${gradId})` : cat.accent} />
+  <rect width="100" height="100" fill={`url(#${uid})`} />
+
+  {/* Decorative network motif */}
+  <g stroke="#ffffff" stroke-opacity="0.3" stroke-width="0.35" fill="none">
+    {nodes.map((n, i) =>
+      i < nodes.length - 1 ? (
+        <line x1={n.cx} y1={n.cy} x2={nodes[i + 1].cx} y2={nodes[i + 1].cy} />
+      ) : null
+    )}
+  </g>
+  <g fill="#ffffff" fill-opacity="0.45">
+    {nodes.map((n) => <circle cx={n.cx} cy={n.cy} r={n.r} />)}
+  </g>
+
+  {/* Category icon, oversized and softly masked into the corner */}
+  <g
+    transform={`translate(${58 + offsetX * 0.3} ${52 + offsetY * 0.25}) rotate(${rotate}) scale(1.9)`}
+    opacity="0.22"
+  >
+    <path
+      d={cat.icon}
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>

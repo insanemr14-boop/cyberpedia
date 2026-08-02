@@ -1,0 +1,99 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { AUTHORS, type Author } from '../../config/authors';
+import { getArticlesByAuthor, type Article, slugOf } from '../../lib/articles';
+import {
+  authorSchema,
+  breadcrumbSchema,
+  collectionPageSchema,
+} from '../../lib/schema';
+
+export const getStaticPaths = (async () => {
+  return Promise.all(
+    AUTHORS.map(async (author) => ({
+      params: { author: author.slug },
+      props: { author, articles: await getArticlesByAuthor(author.slug) },
+    }))
+  );
+}) satisfies GetStaticPaths;
+
+interface Props {
+  author: Author;
+  articles: Article[];
+}
+
+const { author, articles } = Astro.props;
+
+const path = `/authors/${author.slug}`;
+const description = `${author.bio} Read every article from ${author.name}.`;
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Authors', href: '/about/' },
+  { name: author.name, href: `${path}/` },
+];
+---
+
+<BaseLayout
+  title={author.name}
+  description={description.slice(0, 300)}
+  schemaNodes={[
+    authorSchema(author),
+    collectionPageSchema({
+      path,
+      title: author.name,
+      description,
+      items: articles.map((a) => ({
+        name: a.data.title,
+        href: `/articles/${slugOf(a)}/`,
+      })),
+    }),
+    breadcrumbSchema(path, crumbs),
+  ]}
+>
+  <div class="container-page py-8 sm:py-12">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="flex flex-col gap-5 sm:flex-row sm:items-start">
+      <span
+        class="grid size-16 shrink-0 place-items-center rounded-2xl text-xl font-bold text-white"
+        style={`background:${author.accent}`}
+        aria-hidden="true"
+      >
+        {author.initials}
+      </span>
+
+      <div class="max-w-2xl">
+        <p class="text-xs font-bold uppercase tracking-wider text-[var(--text-subtle)]">
+          {author.role}
+        </p>
+        <h1
+          class="mt-1 text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+        >
+          {author.name}
+        </h1>
+        <p class="mt-3 text-base leading-relaxed text-[var(--text-muted)]">{author.bio}</p>
+        <p class="mt-3 text-sm text-[var(--text-subtle)]">
+          {articles.length} {articles.length === 1 ? 'article' : 'articles'} published
+        </p>
+      </div>
+    </header>
+
+    {
+      articles.length > 0 ? (
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <ArticleCard article={article} variant="default" headingLevel={2} />
+          ))}
+        </div>
+      ) : (
+        <p class="surface mt-10 p-10 text-center text-[var(--text-muted)]">
+          No articles published under this byline yet.
+        </p>
+      )
+    }
+  </div>
+</BaseLayout>

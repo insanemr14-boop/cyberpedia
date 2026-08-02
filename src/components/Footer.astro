@@ -1,0 +1,170 @@
+---
+import { SITE, FOOTER_NAV } from '../config/site.config';
+import { CATEGORIES } from '../config/categories';
+import Newsletter from './Newsletter.astro';
+
+const year = new Date().getFullYear();
+// Surface the highest-value categories in the footer for internal link equity.
+const footerCategories = CATEGORIES.slice(0, 10);
+---
+
+{SITE.features.newsletter && (
+  <section class="border-t border-[var(--border)] bg-[var(--bg-alt)]">
+    <div class="container-page py-14">
+      <Newsletter variant="banner" />
+    </div>
+  </section>
+)}
+
+<footer class="border-t border-[var(--border)] bg-[var(--bg)]">
+  <div class="container-page py-12">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+      {/* ---------- Brand column ---------- */}
+      <div class="lg:col-span-2">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 text-lg font-extrabold tracking-tight"
+        >
+          <svg class="size-7" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="var(--color-primary)" />
+            <path
+              d="M16 7l7 3v6c0 4.2-2.9 7.6-7 8.4-4.1-.8-7-4.2-7-8.4v-6l7-3Z"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path
+              d="m12.8 16.2 2.3 2.3 4.3-4.6"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>
+            <span class="text-[var(--text)]">{SITE.logo.primary}</span><span
+              class="text-[var(--color-primary)]">{SITE.logo.accent}</span
+            >
+          </span>
+        </a>
+
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-[var(--text-muted)]">
+          {SITE.description}
+        </p>
+
+        <div class="mt-5 flex items-center gap-3">
+          {SITE.social.twitter && (
+            <a
+              href={SITE.social.twitter}
+              rel="me noopener noreferrer"
+              target="_blank"
+              class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+                     text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+              aria-label={`${SITE.name} on X`}
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.9 2H22l-7.1 8.1L23.2 22h-6.5l-5.1-6.7L5.8 22H2.6l7.6-8.7L1.5 2H8l4.6 6.1L18.9 2Zm-1.1 18h1.8L7.3 3.9H5.4L17.8 20Z" />
+              </svg>
+            </a>
+          )}
+          {SITE.social.github && (
+            <a
+              href={SITE.social.github}
+              rel="noopener noreferrer"
+              target="_blank"
+              class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+                     text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+              aria-label={`${SITE.name} on GitHub`}
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2A10 10 0 0 0 8.8 21.5c.5.1.7-.2.7-.5v-1.7C6.7 19.9 6.1 18 6.1 18c-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.8-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2Z" />
+              </svg>
+            </a>
+          )}
+          <a
+            href="/rss.xml"
+            class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+                   text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+            aria-label="RSS feed"
+          >
+            <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <circle cx="6.2" cy="17.8" r="2.2" />
+              <path d="M4 10.2v2.9a7.9 7.9 0 0 1 6.9 6.9h2.9C13.8 14.9 9.3 10.4 4 10.2Zm0-5.2v2.9c6.2.2 11.2 5.2 11.4 11.4h2.9C18.1 11.4 12 5.2 4 5Z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {/* ---------- Link columns ---------- */}
+      {
+        FOOTER_NAV.map((group) => (
+          <nav aria-labelledby={`footer-${group.heading}`}>
+            <h2
+              id={`footer-${group.heading}`}
+              class="text-xs font-bold uppercase tracking-wider text-[var(--text)]"
+            >
+              {group.heading}
+            </h2>
+            <ul class="mt-4 space-y-2.5">
+              {group.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    {/* ---------- Category link cloud (internal linking) ---------- */}
+    <div class="mt-10 border-t border-[var(--border)] pt-8">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--text)]">
+        Browse Topics
+      </h2>
+      <ul class="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+        {
+          footerCategories.map((cat) => (
+            <li>
+              <a
+                href={`/category/${cat.slug}/`}
+                class="text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--color-primary)]"
+              >
+                {cat.name}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href="/categories"
+            class="text-sm font-semibold text-[var(--color-primary)] transition-colors hover:underline"
+          >
+            All categories &rarr;
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    {/* ---------- Legal bar ---------- */}
+    <div
+      class="mt-8 flex flex-col gap-3 border-t border-[var(--border)] pt-6
+             text-sm text-[var(--text-subtle)] sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>&copy; {year} {SITE.organization.legalName}. All rights reserved.</p>
+      <p>
+        Published for defensive and educational purposes.
+        <a href="/disclaimer" class="link-underline ml-1 text-[var(--text-muted)]">
+          Disclaimer
+        </a>
+      </p>
+    </div>
+  </div>
+</footer>

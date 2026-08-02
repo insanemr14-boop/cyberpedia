@@ -1,0 +1,154 @@
+---
+/**
+ * Shared layout for every listing surface: /articles, /news, /guides,
+ * /reviews, /category/*, /tag/*, /authors/*.
+ *
+ * One layout means pagination, empty states, SEO and heading structure behave
+ * identically everywhere, and adding a new archive is a page file with no
+ * layout duplication.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import Pagination from '../components/Pagination.astro';
+import type { Article } from '../lib/articles';
+import type { BreadcrumbItem } from '../lib/schema';
+import { breadcrumbSchema, collectionPageSchema } from '../lib/schema';
+import { slugOf } from '../lib/articles';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Optional visible intro paragraph, defaults to `description`. */
+  lede?: string;
+  articles: Article[];
+  crumbs: BreadcrumbItem[];
+  /** Base path for pagination links, e.g. `/articles`. */
+  paginationBase?: string;
+  currentPage?: number;
+  lastPage?: number;
+  accent?: string;
+  eyebrow?: string;
+  emptyMessage?: string;
+}
+
+const {
+  title,
+  description,
+  lede,
+  articles,
+  crumbs,
+  paginationBase,
+  currentPage = 1,
+  lastPage = 1,
+  accent,
+  eyebrow,
+  emptyMessage = 'No articles have been published in this section yet.',
+} = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonicalBase = paginationBase ?? path;
+
+// Page 2+ of an archive is thin, near-duplicate content. Keep it crawlable
+// (links flow through) but out of the index.
+const noindex = currentPage > 1;
+
+const prev =
+  currentPage > 1
+    ? currentPage === 2
+      ? `${canonicalBase}/`
+      : `${canonicalBase}/${currentPage - 1}/`
+    : undefined;
+const next = currentPage < lastPage ? `${canonicalBase}/${currentPage + 1}/` : undefined;
+---
+
+<BaseLayout
+  title={currentPage > 1 ? `${title} — Page ${currentPage}` : title}
+  description={description}
+  noindex={noindex}
+  prev={prev}
+  next={next}
+  schemaNodes={[
+    collectionPageSchema({
+      path,
+      title,
+      description,
+      items: articles.map((a) => ({
+        name: a.data.title,
+        href: `/articles/${slugOf(a)}/`,
+      })),
+    }),
+    breadcrumbSchema(path, crumbs),
+  ]}
+>
+  <div class="container-page py-8 sm:py-12">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="max-w-3xl">
+      {
+        eyebrow && (
+          <p
+            class="mb-2 text-xs font-bold uppercase tracking-wider"
+            style={accent ? `color:${accent}` : 'color:var(--color-primary)'}
+          >
+            {eyebrow}
+          </p>
+        )
+      }
+
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+      >
+        {title}
+      </h1>
+
+      <p class="mt-3 text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+        {lede ?? description}
+      </p>
+
+      {
+        lastPage > 1 && (
+          <p class="mt-3 text-sm text-[var(--text-subtle)]">
+            Page {currentPage} of {lastPage}
+          </p>
+        )
+      }
+    </header>
+
+    {
+      articles.length === 0 ? (
+        <div class="surface mt-10 p-10 text-center">
+          <p class="text-[var(--text-muted)]">{emptyMessage}</p>
+          <a
+            href="/articles"
+            class="mt-4 inline-block text-sm font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            Browse all articles &rarr;
+          </a>
+        </div>
+      ) : (
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article, index) => (
+            <ArticleCard
+              article={article}
+              variant="default"
+              headingLevel={2}
+              class={index === 0 ? 'sm:col-span-2 lg:col-span-1' : ''}
+            />
+          ))}
+        </div>
+      )
+    }
+
+    {
+      paginationBase && lastPage > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          lastPage={lastPage}
+          base={paginationBase}
+          class="mt-12"
+        />
+      )
+    }
+  </div>
+</BaseLayout>

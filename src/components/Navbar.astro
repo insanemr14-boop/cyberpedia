@@ -1,0 +1,203 @@
+---
+import { SITE, MAIN_NAV } from '../config/site.config';
+import ThemeSwitcher from './ThemeSwitcher.astro';
+import SearchBar from './SearchBar.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-[var(--border)]
+         bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-md"
+>
+  <div class="container-page">
+    <div class="flex h-16 items-center justify-between gap-4">
+      {/* ---------- Brand ---------- */}
+      <a
+        href="/"
+        class="flex shrink-0 items-center gap-2 text-lg font-extrabold tracking-tight"
+        aria-label={`${SITE.name} home`}
+      >
+        <svg class="size-7 shrink-0" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="var(--color-primary)" />
+          <path
+            d="M16 7l7 3v6c0 4.2-2.9 7.6-7 8.4-4.1-.8-7-4.2-7-8.4v-6l7-3Z"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+          <path
+            d="m12.8 16.2 2.3 2.3 4.3-4.6"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span class="hidden xs:inline">
+          <span class="text-[var(--text)]">{SITE.logo.primary}</span><span
+            class="text-[var(--color-primary)]">{SITE.logo.accent}</span
+          >
+        </span>
+      </a>
+
+      {/* ---------- Desktop nav ---------- */}
+      <nav
+        class="hidden items-center gap-1 lg:flex"
+        aria-label="Main navigation"
+      >
+        {
+          MAIN_NAV.map((item) => (
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class:list={[
+                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive(item.href)
+                  ? 'bg-[var(--bg-alt)] text-[var(--color-primary)]'
+                  : 'text-[var(--text-muted)] hover:bg-[var(--bg-alt)] hover:text-[var(--text)]',
+              ]}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      {/* ---------- Actions ---------- */}
+      <div class="flex items-center gap-2">
+        {SITE.features.search && (
+          <div class="hidden md:block">
+            <SearchBar variant="inline" />
+          </div>
+        )}
+
+        {SITE.features.search && (
+          <a
+            href="/search"
+            class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+                   text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-alt)]
+                   hover:text-[var(--text)] md:hidden"
+            aria-label="Search"
+          >
+            <svg
+              class="size-[18px]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
+          </a>
+        )}
+
+        {SITE.features.themeSwitcher && <ThemeSwitcher />}
+
+        <button
+          type="button"
+          id="nav-toggle"
+          class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+                 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-alt)]
+                 hover:text-[var(--text)] lg:hidden"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+        >
+          <svg
+            id="nav-icon-open"
+            class="size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+          <svg
+            id="nav-icon-close"
+            class="hidden size-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {/* ---------- Mobile nav ---------- */}
+    <nav
+      id="mobile-nav"
+      class="hidden border-t border-[var(--border)] py-3 lg:hidden"
+      aria-label="Mobile navigation"
+    >
+      <ul class="flex flex-col gap-1">
+        {
+          MAIN_NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                class:list={[
+                  'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  isActive(item.href)
+                    ? 'bg-[var(--bg-alt)] text-[var(--color-primary)]'
+                    : 'text-[var(--text-muted)] hover:bg-[var(--bg-alt)] hover:text-[var(--text)]',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="pt-2"><SearchBar variant="inline" class="max-w-none" /></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-nav');
+  const iconOpen = document.getElementById('nav-icon-open');
+  const iconClose = document.getElementById('nav-icon-close');
+
+  function setOpen(open: boolean) {
+    menu?.classList.toggle('hidden', !open);
+    iconOpen?.classList.toggle('hidden', open);
+    iconClose?.classList.toggle('hidden', !open);
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(menu?.classList.contains('hidden') ?? true);
+  });
+
+  // Escape closes the menu and returns focus to the toggle.
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !menu?.classList.contains('hidden')) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+
+  // Collapse the mobile menu if the viewport grows past the breakpoint.
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+</script>

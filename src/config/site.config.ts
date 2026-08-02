@@ -1,0 +1,215 @@
+/**
+ * ============================================================================
+ * SITE CONFIGURATION — the single tenant switch for this codebase.
+ * ============================================================================
+ *
+ * This platform is designed to power multiple publications (CyberPedia,
+ * FinancePedia, LegalPedia, HostingGuide, AIInsider, CloudAcademy) from one
+ * codebase. Everything brand-specific lives in this file plus
+ * `categories.ts` and `authors.ts`.
+ *
+ * To spin up a new publication:
+ *   1. Change the values in this file.
+ *   2. Replace `src/config/categories.ts` with the new vertical's taxonomy.
+ *   3. Replace `src/config/authors.ts` with the new editorial desks.
+ *   4. Swap the brand colours in `src/styles/global.css` (@theme block).
+ *   5. Point `content/articles/` at the new content.
+ *
+ * No component, layout or page should ever hardcode a brand name, URL,
+ * colour or piece of copy. If you find yourself doing that, add it here.
+ */
+
+export interface SiteConfig {
+  name: string;
+  shortName: string;
+  domain: string;
+  url: string;
+  tagline: string;
+  description: string;
+  locale: string;
+  language: string;
+  themeColor: string;
+  /** Brand mark rendered in the navbar: split into two tones. */
+  logo: { primary: string; accent: string };
+  /** Organisation-level details used for Organization JSON-LD. */
+  organization: {
+    legalName: string;
+    foundingYear: number;
+    email: string;
+    logoPath: string;
+  };
+  social: {
+    twitter?: string;
+    twitterHandle?: string;
+    github?: string;
+    linkedin?: string;
+    mastodon?: string;
+    rss: string;
+  };
+  /**
+   * Analytics placeholders. Leave empty to disable — nothing is injected and
+   * no third-party origin is contacted until an ID is supplied.
+   */
+  analytics: {
+    googleAnalyticsId: string;
+    googleSearchConsoleVerification: string;
+    microsoftClarityId: string;
+    /** Cloudflare Web Analytics beacon token. */
+    cloudflareAnalyticsToken: string;
+  };
+  /** Newsletter provider endpoint. Wired to `/api/newsletter` placeholder. */
+  newsletter: {
+    enabled: boolean;
+    endpoint: string;
+    heading: string;
+    body: string;
+    buttonLabel: string;
+  };
+  /** Pagination sizes per surface. */
+  pagination: {
+    articlesPerPage: number;
+    categoryPerPage: number;
+    relatedCount: number;
+  };
+  features: {
+    search: boolean;
+    comments: boolean;
+    newsletter: boolean;
+    themeSwitcher: boolean;
+    readingProgress: boolean;
+  };
+}
+
+export const SITE: SiteConfig = {
+  name: 'CyberPedia',
+  shortName: 'CyberPedia',
+  domain: 'cyberpedia.qd.je',
+  url: 'https://cyberpedia.qd.je',
+  tagline: 'Cybersecurity, explained properly.',
+  description:
+    'CyberPedia publishes in-depth cybersecurity analysis, threat intelligence, defensive guides and security tooling reviews for engineers and defenders.',
+  locale: 'en_US',
+  language: 'en',
+  themeColor: '#0066FF',
+
+  logo: { primary: 'Cyber', accent: 'Pedia' },
+
+  organization: {
+    legalName: 'CyberPedia',
+    foundingYear: 2026,
+    email: 'editorial@cyberpedia.qd.je',
+    logoPath: '/logo.svg',
+  },
+
+  social: {
+    twitter: 'https://twitter.com/cyberpedia',
+    twitterHandle: '@cyberpedia',
+    github: 'https://github.com/insanemr14-boop/cyberpedia',
+    rss: '/rss.xml',
+  },
+
+  // Populate these to activate the corresponding provider. Empty = disabled.
+  analytics: {
+    googleAnalyticsId: '',
+    googleSearchConsoleVerification: '',
+    microsoftClarityId: '',
+    cloudflareAnalyticsToken: '',
+  },
+
+  newsletter: {
+    enabled: true,
+    endpoint: '/api/newsletter',
+    heading: 'The CyberPedia Briefing',
+    body: 'Threat analysis and defensive guidance, sent when there is something worth saying. No vendor pitches.',
+    buttonLabel: 'Subscribe',
+  },
+
+  pagination: {
+    articlesPerPage: 12,
+    categoryPerPage: 12,
+    relatedCount: 3,
+  },
+
+  features: {
+    search: true,
+    comments: true,
+    newsletter: true,
+    themeSwitcher: true,
+    readingProgress: true,
+  },
+};
+
+/** Primary navigation. Rendered in the navbar and mobile drawer. */
+export const MAIN_NAV = [
+  { label: 'News', href: '/news' },
+  { label: 'Guides', href: '/guides' },
+  { label: 'Reviews', href: '/reviews' },
+  { label: 'Categories', href: '/categories' },
+  { label: 'Articles', href: '/articles' },
+] as const;
+
+/** Footer link groups. */
+export const FOOTER_NAV = [
+  {
+    heading: 'Content',
+    links: [
+      { label: 'Latest News', href: '/news' },
+      { label: 'Guides', href: '/guides' },
+      { label: 'Reviews', href: '/reviews' },
+      { label: 'All Articles', href: '/articles' },
+      { label: 'Categories', href: '/categories' },
+    ],
+  },
+  {
+    heading: 'Publication',
+    links: [
+      { label: 'About', href: '/about' },
+      { label: 'Editorial Policy', href: '/editorial-policy' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'RSS Feed', href: '/rss.xml' },
+      { label: 'Sitemap', href: '/sitemap-index.xml' },
+    ],
+  },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms of Use', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookie-policy' },
+      { label: 'Disclaimer', href: '/disclaimer' },
+    ],
+  },
+] as const;
+
+/** Content types drive the /news, /guides and /reviews surfaces. */
+export const CONTENT_TYPES = {
+  news: {
+    label: 'News',
+    plural: 'Latest News',
+    href: '/news',
+    description:
+      'Breaking cybersecurity news, vulnerability disclosures and incident reporting as it develops.',
+  },
+  guide: {
+    label: 'Guide',
+    plural: 'Guides',
+    href: '/guides',
+    description:
+      'Step-by-step defensive guides and implementation walkthroughs written for practitioners.',
+  },
+  review: {
+    label: 'Review',
+    plural: 'Reviews',
+    href: '/reviews',
+    description:
+      'Independent evaluations of security tooling, architectures and vendor categories.',
+  },
+  analysis: {
+    label: 'Analysis',
+    plural: 'Analysis',
+    href: '/articles',
+    description: 'Deep technical analysis of threats, techniques and security architecture.',
+  },
+} as const;
+
+export type ContentType = keyof typeof CONTENT_TYPES;

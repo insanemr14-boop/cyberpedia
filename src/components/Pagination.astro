@@ -1,0 +1,161 @@
+---
+/**
+ * Archive pagination.
+ *
+ * Renders a windowed page list with ellipses so a 40-page archive does not
+ * emit 40 links. rel=prev/next are set on the anchors, and the matching
+ * <link> tags are emitted by the layout for crawlers.
+ */
+interface Props {
+  currentPage: number;
+  lastPage: number;
+  /** Base path without the page segment, e.g. `/articles` or `/category/malware`. */
+  base: string;
+  class?: string;
+}
+
+const { currentPage, lastPage, base, class: className = '' } = Astro.props;
+
+const cleanBase = base.replace(/\/+$/, '');
+const hrefFor = (page: number) => (page === 1 ? `${cleanBase}/` : `${cleanBase}/${page}/`);
+
+/** Window of pages: always first, last, current and its neighbours. */
+function pageWindow(current: number, last: number): (number | 'gap')[] {
+  if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
+
+  const pages = new Set<number>([1, last, current]);
+  if (current - 1 > 1) pages.add(current - 1);
+  if (current + 1 < last) pages.add(current + 1);
+  if (current <= 3) pages.add(2).add(3).add(4);
+  if (current >= last - 2) pages.add(last - 1).add(last - 2).add(last - 3);
+
+  const sorted = [...pages].filter((p) => p >= 1 && p <= last).sort((a, b) => a - b);
+
+  const withGaps: (number | 'gap')[] = [];
+  let previous = 0;
+  for (const page of sorted) {
+    if (previous && page - previous > 1) withGaps.push('gap');
+    withGaps.push(page);
+    previous = page;
+  }
+  return withGaps;
+}
+
+const pages = pageWindow(currentPage, lastPage);
+const itemBase =
+  'grid h-10 min-w-10 place-items-center rounded-lg border px-3 text-sm font-medium transition-colors';
+---
+
+{
+  lastPage > 1 && (
+    <nav class={`flex justify-center ${className}`} aria-label="Pagination">
+      <ul class="flex flex-wrap items-center gap-1.5">
+        <li>
+          {currentPage > 1 ? (
+            <a
+              href={hrefFor(currentPage - 1)}
+              rel="prev"
+              class={`${itemBase} border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]`}
+              aria-label="Previous page"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m15 6-6 6 6 6" />
+              </svg>
+            </a>
+          ) : (
+            <span
+              class={`${itemBase} cursor-not-allowed border-[var(--border)] text-[var(--text-subtle)] opacity-40`}
+              aria-hidden="true"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m15 6-6 6 6 6" />
+              </svg>
+            </span>
+          )}
+        </li>
+
+        {pages.map((page) =>
+          page === 'gap' ? (
+            <li aria-hidden="true">
+              <span class="px-1.5 text-[var(--text-subtle)]">&hellip;</span>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={hrefFor(page)}
+                aria-current={page === currentPage ? 'page' : undefined}
+                aria-label={`Page ${page}`}
+                class:list={[
+                  itemBase,
+                  page === currentPage
+                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
+                    : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]',
+                ]}
+              >
+                {page}
+              </a>
+            </li>
+          )
+        )}
+
+        <li>
+          {currentPage < lastPage ? (
+            <a
+              href={hrefFor(currentPage + 1)}
+              rel="next"
+              class={`${itemBase} border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]`}
+              aria-label="Next page"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </a>
+          ) : (
+            <span
+              class={`${itemBase} cursor-not-allowed border-[var(--border)] text-[var(--text-subtle)] opacity-40`}
+              aria-hidden="true"
+            >
+              <svg
+                class="size-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            </span>
+          )}
+        </li>
+      </ul>
+    </nav>
+  )
+}

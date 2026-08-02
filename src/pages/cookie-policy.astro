@@ -1,0 +1,91 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE } from '../config/site.config';
+---
+
+<PageLayout
+  title="Cookie Policy"
+  description={`Which cookies and local storage ${SITE.name} uses, what each one does, and how to control them in your browser.`}
+  lede="What we store on your device, and why."
+  lastUpdated={new Date('2026-08-02')}
+>
+  <div class="not-prose mb-8 rounded-lg border border-[var(--color-warning)]/40 bg-[var(--color-warning)]/10 p-4 text-sm text-[var(--text-muted)]">
+    <strong class="text-[var(--text)]">Template notice:</strong> this policy is a
+    good-faith starting point, not legal advice. Confirm it matches what your deployed
+    site actually sets before relying on it.
+  </div>
+
+  <h2>The short version</h2>
+  <p>
+    This site sets <strong>no advertising cookies and no cross-site tracking cookies</strong>.
+    The only thing we store by default is your light/dark theme preference, and that never
+    leaves your browser.
+  </p>
+
+  <h2>What we store</h2>
+
+  <div class="not-prose my-6 overflow-x-auto">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="bg-[var(--bg-alt)]">
+          <th class="border border-[var(--border)] p-2.5 text-left font-semibold">Name</th>
+          <th class="border border-[var(--border)] p-2.5 text-left font-semibold">Type</th>
+          <th class="border border-[var(--border)] p-2.5 text-left font-semibold">Purpose</th>
+          <th class="border border-[var(--border)] p-2.5 text-left font-semibold">Duration</th>
+        </tr>
+      </thead>
+      <tbody class="text-[var(--text-muted)]">
+        <tr>
+          <td class="border border-[var(--border)] p-2.5"><code>theme</code></td>
+          <td class="border border-[var(--border)] p-2.5">Local storage</td>
+          <td class="border border-[var(--border)] p-2.5">
+            Remembers whether you chose light or dark mode
+          </td>
+          <td class="border border-[var(--border)] p-2.5">Until you clear it</td>
+        </tr>
+        <tr>
+          <td class="border border-[var(--border)] p-2.5"><code>_cfuvid</code> / <code>__cf_bm</code></td>
+          <td class="border border-[var(--border)] p-2.5">Cookie (Cloudflare)</td>
+          <td class="border border-[var(--border)] p-2.5">
+            Bot management and rate limiting by our hosting provider
+          </td>
+          <td class="border border-[var(--border)] p-2.5">Session / 30 minutes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>If analytics are enabled</h2>
+  <p>
+    Where a privacy-preserving analytics provider is enabled, it may set a cookie or use
+    local storage to count unique visits in aggregate. These are strictly measurement
+    cookies, are never used for advertising, and are never shared with ad networks. Any
+    analytics in use is named in the <a href="/privacy-policy">privacy policy</a>.
+  </p>
+
+  <h2>Third-party requests</h2>
+  <p>
+    Web fonts are requested from Google Fonts. This does not set a cookie, but the request
+    necessarily discloses your IP address to that service. Self-hosting the fonts removes
+    that request entirely if it matters to you.
+  </p>
+
+  <h2>Controlling cookies</h2>
+  <p>
+    You can block or delete cookies in your browser settings — every major browser supports
+    this under Privacy or Site Settings. Clearing local storage will reset your theme
+    preference to follow your operating system. Nothing on this site breaks if you block
+    all storage.
+  </p>
+
+  <h2>Do Not Track</h2>
+  <p>
+    We do not perform cross-site tracking, so a DNT or Global Privacy Control signal
+    changes nothing about how we treat you.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions: <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>.
+  </p>
+</PageLayout>

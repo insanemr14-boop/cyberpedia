@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { SITE, CONTENT_TYPES } from '../config/site.config';
+import { CATEGORIES } from '../config/categories';
+import {
+  getPublishedArticles,
+  getFeaturedArticles,
+  getArticlesByType,
+  getTrendingArticles,
+  getEditorsPicks,
+  getCategoryCounts,
+  slugOf,
+} from '../lib/articles';
+import { collectionPageSchema } from '../lib/schema';
+
+const [all, featured, news, reviews, trending, picks, counts] = await Promise.all([
+  getPublishedArticles(),
+  getFeaturedArticles(4),
+  getArticlesByType('news'),
+  getArticlesByType('review'),
+  getTrendingArticles(5),
+  getEditorsPicks(3),
+  getCategoryCounts(),
+]);
+
+const latestNews = news.slice(0, 4);
+const latestReviews = reviews.slice(0, 3);
+// Show categories that actually have content first, then fill the grid.
+const withContent = CATEGORIES.filter((c) => counts.get(c.slug));
+const featuredCategories = [
+  ...withContent,
+  ...CATEGORIES.filter((c) => !counts.get(c.slug)),
+].slice(0, 8);
+---
+
+<BaseLayout
+  title={SITE.name}
+  description={SITE.description}
+  keywords={['cybersecurity', 'security research', 'threat intelligence', 'infosec']}
+  schemaNodes={[
+    collectionPageSchema({
+      path: '/',
+      title: SITE.name,
+      description: SITE.description,
+      items: all.slice(0, 10).map((a) => ({
+        name: a.data.title,
+        href: `/articles/${slugOf(a)}/`,
+      })),
+    }),
+  ]}
+>
+  <Hero articles={featured} />
+
+  <div class="container-page py-12 sm:py-16">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
+      {/* ================= Main column ================= */}
+      <div class="space-y-16">
+        {/* ---------- Latest News ---------- */}
+        {
+          latestNews.length > 0 && (
+            <section aria-labelledby="home-news">
+              <SectionHeading
+                title={CONTENT_TYPES.news.plural}
+                id="home-news"
+                description={CONTENT_TYPES.news.description}
+                href="/news"
+              />
+              <div class="grid gap-5 sm:grid-cols-2">
+                {latestNews.map((article) => (
+                  <ArticleCard article={article} variant="default" headingLevel={3} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        {/* ---------- Editor's Picks ---------- */}
+        {
+          picks.length > 0 && (
+            <section aria-labelledby="home-picks">
+              <SectionHeading
+                title="Editor's Picks"
+                id="home-picks"
+                description="The pieces we would hand a new engineer on their first week."
+                href="/articles"
+              />
+              <div class="grid gap-5 sm:grid-cols-3">
+                {picks.map((article) => (
+                  <ArticleCard article={article} variant="default" headingLevel={3} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        {/* ---------- Latest Reviews ---------- */}
+        {
+          latestReviews.length > 0 && (
+            <section aria-labelledby="home-reviews">
+              <SectionHeading
+                title={CONTENT_TYPES.review.plural}
+                id="home-reviews"
+                description={CONTENT_TYPES.review.description}
+                href="/reviews"
+              />
+              <div class="space-y-4">
+                {latestReviews.map((article) => (
+                  <ArticleCard article={article} variant="list" headingLevel={3} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+      </div>
+
+      {/* ================= Sidebar ================= */}
+      <aside class="space-y-10" aria-label="Trending and topics">
+        {
+          trending.length > 0 && (
+            <section aria-labelledby="home-trending">
+              <h2
+                id="home-trending"
+                class="mb-4 text-xs font-bold uppercase tracking-wider text-[var(--text)]"
+              >
+                Trending Now
+              </h2>
+              <ol class="space-y-4">
+                {trending.map((article, index) => (
+                  <li class="flex gap-3">
+                    <span
+                      class="shrink-0 text-lg font-extrabold tabular-nums text-[var(--border-strong)]"
+                      aria-hidden="true"
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <ArticleCard
+                      article={article}
+                      variant="compact"
+                      headingLevel={3}
+                      class="flex-1"
+                    />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )
+        }
+      </aside>
+    </div>
+
+    {/* ---------- Categories grid ---------- */}
+    <section class="mt-16" aria-labelledby="home-categories">
+      <SectionHeading
+        title="Browse by Topic"
+                id="home-categories"
+        description="Every article is filed under a topic so you can go deep on one area."
+        href="/categories"
+        linkLabel="All topics"
+      />
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          featuredCategories.map((category) => (
+            <CategoryCard category={category} count={counts.get(category.slug) ?? 0} />
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>

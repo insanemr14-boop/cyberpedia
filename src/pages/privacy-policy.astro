@@ -1,0 +1,108 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE } from '../config/site.config';
+---
+
+<PageLayout
+  title="Privacy Policy"
+  description={`How ${SITE.name} collects, uses and protects personal data, including analytics, newsletter subscriptions and your rights under GDPR and CCPA.`}
+  lede="What we collect, why, and what you can do about it."
+  lastUpdated={new Date('2026-08-02')}
+>
+  <div class="not-prose mb-8 rounded-lg border border-[var(--color-warning)]/40 bg-[var(--color-warning)]/10 p-4 text-sm text-[var(--text-muted)]">
+    <strong class="text-[var(--text)]">Template notice:</strong> this policy is a
+    good-faith starting point, not legal advice. Have it reviewed by a qualified
+    practitioner against your actual data processing before relying on it.
+  </div>
+
+  <h2>Who we are</h2>
+  <p>
+    {SITE.organization.legalName} operates <strong>{SITE.domain}</strong>. For any privacy
+    question, contact <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>.
+  </p>
+
+  <h2>What we collect</h2>
+  <h3>Information you give us</h3>
+  <ul>
+    <li>
+      <strong>Email address</strong> — only if you subscribe to the newsletter. Used to
+      send the briefing and nothing else.
+    </li>
+    <li>
+      <strong>Correspondence</strong> — if you email us, we keep the message and your
+      address so we can reply and maintain a record of corrections.
+    </li>
+  </ul>
+
+  <h3>Information collected automatically</h3>
+  <ul>
+    <li>
+      <strong>Analytics</strong> — aggregate page views, referrers, approximate country
+      and device type. Used to understand which articles are useful.
+    </li>
+    <li>
+      <strong>Server logs</strong> — our hosting provider records IP addresses and request
+      metadata for security and abuse prevention.
+    </li>
+  </ul>
+  <p>
+    We do not sell personal data. We do not run behavioural advertising. We do not build
+    cross-site profiles of readers.
+  </p>
+
+  <h2>Legal basis (GDPR)</h2>
+  <ul>
+    <li><strong>Consent</strong> — newsletter subscription and any non-essential analytics.</li>
+    <li>
+      <strong>Legitimate interests</strong> — security logging, abuse prevention and
+      aggregate measurement of site performance.
+    </li>
+  </ul>
+
+  <h2>Third parties</h2>
+  <p>
+    This site is served by Cloudflare Pages, which processes request data as our hosting
+    provider. Where analytics or a newsletter provider are enabled, those services process
+    data on our behalf under their own terms. Web fonts are served by Google Fonts, which
+    receives the request IP as a technical necessity of delivering the font file.
+  </p>
+
+  <h2>Retention</h2>
+  <ul>
+    <li>Newsletter addresses: until you unsubscribe, then deleted.</li>
+    <li>Correspondence: up to 24 months.</li>
+    <li>Analytics: aggregate only, retained per the provider's default.</li>
+  </ul>
+
+  <h2>Your rights</h2>
+  <p>
+    Under GDPR, UK GDPR and comparable regimes you may request access to, correction of,
+    or deletion of your personal data; object to or restrict processing; and request
+    portability. Under the CCPA/CPRA, California residents may request disclosure and
+    deletion, and may opt out of sale — we do not sell data.
+  </p>
+  <p>
+    Exercise any of these by emailing
+    <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>. We respond
+    within 30 days. You also have the right to complain to your local supervisory
+    authority.
+  </p>
+
+  <h2>Security</h2>
+  <p>
+    The site is served over HTTPS with HSTS, a Content Security Policy and modern security
+    headers. No system is perfectly secure; report a concern via the
+    <a href="/contact">contact page</a>.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    This site is aimed at security professionals and is not directed at children under 16.
+    We do not knowingly collect their data.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    Material changes to this policy will be reflected in the "last updated" date above.
+  </p>
+</PageLayout>

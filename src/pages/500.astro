@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site.config';
+
+/**
+ * Server error page.
+ *
+ * A fully static site rarely produces a 5xx of its own — this exists so the
+ * platform has a branded page to serve when the edge, a Pages Function or a
+ * future SSR route fails. Cloudflare Pages does not wire this up
+ * automatically the way it does 404.html; see README for the routing note.
+ */
+---
+
+<BaseLayout
+  title="Something Went Wrong"
+  description="An unexpected error occurred while loading this page. Please try again in a moment."
+  noindex
+>
+  <div class="container-page py-20 sm:py-28">
+    <div class="mx-auto max-w-xl text-center">
+      <p class="text-6xl font-extrabold tracking-tight text-[var(--color-danger)] sm:text-7xl">
+        500
+      </p>
+      <h1 class="mt-4 text-2xl font-extrabold tracking-tight text-[var(--text)] sm:text-3xl">
+        Something went wrong on our end
+      </h1>
+      <p class="mt-3 text-[var(--text-muted)]">
+        This is our fault, not yours. The error has been logged. Try reloading in a
+        moment — if it keeps happening, let the editorial desk know.
+      </p>
+
+      <div class="mt-7 flex flex-wrap justify-center gap-3">
+        <a
+          href="/"
+          class="rounded-lg bg-[var(--color-primary)] px-5 py-2.5 text-sm font-semibold
+                 text-white transition-colors hover:bg-[var(--color-primary-hover)]"
+        >
+          Back to home
+        </a>
+        <a
+          href="/contact"
+          class="rounded-lg border border-[var(--border)] px-5 py-2.5 text-sm font-semibold
+                 text-[var(--text)] transition-colors hover:border-[var(--color-primary)]
+                 hover:text-[var(--color-primary)]"
+        >
+          Report the problem
+        </a>
+      </div>
+
+      <p class="mt-8 text-xs text-[var(--text-subtle)]">
+        {SITE.name} &middot; If you were mid-article, your place is safe — reload and
+        continue.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

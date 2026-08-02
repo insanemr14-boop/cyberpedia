@@ -1,0 +1,48 @@
+---
+/**
+ * Analytics loaders.
+ *
+ * Nothing renders and no third-party origin is contacted unless the matching
+ * ID is set in `site.config.ts`. That keeps the default build free of
+ * third-party requests, which matters for both privacy and Lighthouse.
+ *
+ * All providers load with `defer`/async so none of them block rendering.
+ */
+import { SITE } from '../config/site.config';
+
+const { googleAnalyticsId, microsoftClarityId, cloudflareAnalyticsToken } =
+  SITE.analytics;
+
+const isProd = import.meta.env.PROD;
+---
+
+{/* ---------- Cloudflare Web Analytics ---------- */}
+{isProd && cloudflareAnalyticsToken && (
+  <script
+    is:inline
+    defer
+    src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon={`{"token": "${cloudflareAnalyticsToken}"}`}
+  />
+)}
+
+{/* ---------- Google Analytics 4 ----------
+    gtag's bootstrap must run before the async library resolves, so it is
+    served as a static file rather than inlined — this keeps the CSP free of
+    'unsafe-inline' for executable script. */}
+{isProd && googleAnalyticsId && (
+  <>
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <script
+      is:inline
+      async
+      src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+    />
+    <script is:inline defer src="/analytics/ga.js" data-ga-id={googleAnalyticsId} />
+  </>
+)}
+
+{/* ---------- Microsoft Clarity ---------- */}
+{isProd && microsoftClarityId && (
+  <script is:inline defer src="/analytics/clarity.js" data-clarity-id={microsoftClarityId} />
+)}

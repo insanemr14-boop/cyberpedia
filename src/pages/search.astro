@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import SearchBar from '../components/SearchBar.astro';
+import { CATEGORIES } from '../config/categories';
+import { getAllTags } from '../lib/articles';
+import { SITE } from '../config/site.config';
+
+const popularTags = (await getAllTags()).slice(0, 12);
+const topCategories = CATEGORIES.slice(0, 8);
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Search', href: '/search/' },
+];
+---
+
+<BaseLayout
+  title="Search"
+  description={`Search every article on ${SITE.name} — threats, tooling, defensive guides and security architecture.`}
+  noindex
+>
+  <div class="container-page py-8 sm:py-12">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="mx-auto max-w-2xl text-center">
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+      >
+        Search
+      </h1>
+      <p class="mt-3 text-base text-[var(--text-muted)]">
+        Full-text search across every published article. Runs entirely in your browser.
+      </p>
+
+      <div class="mt-6">
+        <SearchBar variant="page" autofocus />
+      </div>
+    </header>
+
+    {/* Pagefind mounts its UI here once its index has loaded. */}
+    <div class="mx-auto mt-10 max-w-2xl">
+      <div id="search-results" data-search-results></div>
+
+      <p
+        id="search-empty"
+        class="hidden text-center text-sm text-[var(--text-muted)]"
+        role="status"
+        aria-live="polite"
+      >
+      </p>
+    </div>
+
+    {/* Browsable fallback: works with JavaScript disabled and gives crawlers
+        real internal links from an otherwise empty page. */}
+    <div class="mx-auto mt-14 max-w-3xl border-t border-[var(--border)] pt-10">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-[var(--text)]">
+        Browse by topic
+      </h2>
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {
+          topCategories.map((category) => (
+            <li>
+              <a
+                href={`/category/${category.slug}/`}
+                class="inline-block rounded-full border border-[var(--border)] px-3 py-1.5
+                       text-sm text-[var(--text-muted)] transition-colors
+                       hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+              >
+                {category.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        popularTags.length > 0 && (
+          <>
+            <h2 class="mt-8 text-sm font-bold uppercase tracking-wider text-[var(--text)]">
+              Popular tags
+            </h2>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {popularTags.map(({ tag, count }) => (
+                <li>
+                  <a
+                    href={`/tag/${tag}/`}
+                    class="inline-block rounded-full border border-[var(--border)] px-3 py-1.5
+                           text-sm text-[var(--text-muted)] transition-colors
+                           hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  >
+                    #{tag} <span class="text-[var(--text-subtle)]">{count}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  /**
+   * Pagefind integration.
+   *
+   * The index only exists in a production build (`pagefind --site dist` runs
+   * after `astro build`), so the import is dynamic and failures degrade to the
+   * browsable category/tag fallback rather than a broken page.
+   */
+  const resultsEl = document.querySelector<HTMLElement>('[data-search-results]');
+  const emptyEl = document.getElementById('search-empty');
+  const input = document.querySelector<HTMLInputElement>('#search-page');
+  const form = input?.closest('form');
+
+  interface PagefindResult {
+    id: string;
+    data: () => Promise<{
+      url: string;
+      meta: { title?: string; image?: string };
+      excerpt: string;
+    }>;
+  }
+
+  let pagefind: {
+    search: (q: string) => Promise<{ results: PagefindResult[] }>;
+  } | null = null;
+
+  async function loadPagefind() {
+    if (pagefind) return pagefind;
+    try {
+      // @ts-expect-error — generated at build time, absent in dev.
+      pagefind = await import('/pagefind/pagefind.js');
+      return pagefind;
+    } catch {
+      return null;
+    }
+  }
+
+  function setMessage(text: string) {
+    if (!emptyEl) return;
+    emptyEl.textContent = text;
+    emptyEl.classList.toggle('hidden', !text);
+  }
+
+  function escapeHtml(value: string) {
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  }
+
+  async function runSearch(query: string) {
+    if (!resultsEl) return;
+
+    if (!query.trim()) {
+      resultsEl.innerHTML = '';
+      setMessage('');
+      return;
+    }
+
+    const engine = await loadPagefind();
+    if (!engine) {
+      setMessage(
+        'Search is only available on the built site. Browse the topics below instead.'
+      );
+      return;
+    }
+
+    setMessage('Searching…');
+    const search = await engine.search(query);
+    const items = await Promise.all(search.results.slice(0, 20).map((r) => r.data()));
+
+    if (!items.length) {
+      resultsEl.innerHTML = '';
+      setMessage(`No results for "${query}".`);
+      return;
+    }
+
+    setMessage('');
+    resultsEl.innerHTML = `
+      <p class="mb-4 text-sm text-[var(--text-subtle)]">
+        ${items.length} result${items.length === 1 ? '' : 's'} for "${escapeHtml(query)}"
+      </p>
+      <ul class="space-y-4">
+        ${items
+          .map(
+            (item) => `
+          <li class="surface p-4 sm:p-5">
+            <h2 class="text-base font-bold">
+              <a href="${item.url}" class="text-[var(--text)] hover:text-[var(--color-primary)]">
+                ${escapeHtml(item.meta.title ?? 'Untitled')}
+              </a>
+            </h2>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">${item.excerpt}</p>
+          </li>`
+          )
+          .join('')}
+      </ul>`;
+  }
+
+  // Run the query supplied in the URL, so /search?q=… is shareable.
+  const initialQuery = new URLSearchParams(window.location.search).get('q') ?? '';
+  if (input && initialQuery) input.value = initialQuery;
+  if (initialQuery) runSearch(initialQuery);
+
+  // Debounced live search as the user types.
+  let timer: number;
+  input?.addEventListener('input', () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      const query = input.value;
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', query);
+      else url.searchParams.delete('q');
+      window.history.replaceState({}, '', url);
+      runSearch(query);
+    }, 200);
+  });
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    runSearch(input?.value ?? '');
+  });
+</script>

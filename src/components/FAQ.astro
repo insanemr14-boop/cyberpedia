@@ -1,0 +1,65 @@
+---
+/**
+ * FAQ accordion.
+ *
+ * Built on native <details>/<summary>: keyboard accessible, works with no
+ * JavaScript, and the content is present in the DOM for crawlers even while
+ * collapsed. The matching FAQPage JSON-LD is emitted by the article layout.
+ */
+interface Props {
+  items: { question: string; answer: string }[];
+  title?: string;
+  class?: string;
+}
+
+const { items, title = 'Frequently Asked Questions', class: className = '' } =
+  Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class={className} aria-labelledby="faq-heading">
+      <h2
+        id="faq-heading"
+        class="text-xl font-extrabold tracking-tight text-[var(--text)] sm:text-2xl"
+      >
+        {title}
+      </h2>
+
+      <div class="mt-5 divide-y divide-[var(--border)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)]">
+        {items.map((item) => (
+          <details class="group bg-[var(--bg-elevated)]">
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-4 p-4
+                     text-sm font-semibold text-[var(--text)] transition-colors
+                     hover:bg-[var(--bg-alt)] sm:p-5 sm:text-base"
+            >
+              <span>{item.question}</span>
+              <svg
+                class="size-5 shrink-0 text-[var(--text-subtle)] transition-transform duration-200 group-open:rotate-45"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm leading-relaxed text-[var(--text-muted)] sm:px-5 sm:pb-5">
+              {item.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* Hide the default disclosure triangle across engines. */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

@@ -1,0 +1,32 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { getPublishedArticles, type Article } from '../../lib/articles';
+import { SITE } from '../../config/site.config';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const articles = await getPublishedArticles();
+  return paginate(articles, { pageSize: SITE.pagination.articlesPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Article>;
+}
+
+const { page } = Astro.props;
+---
+
+<ArchiveLayout
+  title="All Articles"
+  eyebrow="Archive"
+  description={`Every article published on ${SITE.name} — threat analysis, defensive guides, security architecture and tooling reviews.`}
+  lede="The complete archive. Threat analysis, defensive guides, security architecture and independent tooling reviews."
+  articles={page.data}
+  currentPage={page.currentPage}
+  lastPage={page.lastPage}
+  paginationBase="/articles"
+  crumbs={[
+    { name: 'Home', href: '/' },
+    { name: 'Articles', href: '/articles/' },
+  ]}
+/>

@@ -1,0 +1,62 @@
+---
+/**
+ * Home page hero: lead story plus a secondary stack.
+ * Falls back gracefully when there are fewer than three published articles.
+ */
+import type { Article } from '../lib/articles';
+import { SITE } from '../config/site.config';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  articles: Article[];
+}
+
+const { articles } = Astro.props;
+const [lead, ...rest] = articles;
+const secondary = rest.slice(0, 3);
+---
+
+<section class="border-b border-[var(--border)] bg-[var(--bg-alt)]">
+  <div class="container-page py-10 sm:py-14">
+    {/* ---------- Masthead ---------- */}
+    <div class="mb-8 max-w-3xl">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-[var(--border)]
+               bg-[var(--bg)] px-3 py-1 text-xs font-semibold text-[var(--text-muted)]"
+      >
+        <span class="size-1.5 rounded-full bg-[var(--color-success)]" aria-hidden="true"
+        ></span>
+        Independent security research and analysis
+      </p>
+
+      <h1
+        class="mt-4 text-3xl font-extrabold leading-[1.1] tracking-tight text-[var(--text)] sm:text-4xl lg:text-5xl"
+      >
+        {SITE.tagline}
+      </h1>
+
+      <p class="mt-4 max-w-2xl text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+        {SITE.description}
+      </p>
+    </div>
+
+    {/* ---------- Lead + secondary ---------- */}
+    {
+      lead && (
+        <div class="grid gap-5 lg:grid-cols-12">
+          <div class="lg:col-span-7">
+            <ArticleCard article={lead} variant="featured" headingLevel={2} class="h-full" />
+          </div>
+
+          {secondary.length > 0 && (
+            <div class="grid content-start gap-5 lg:col-span-5">
+              {secondary.map((article) => (
+                <ArticleCard article={article} variant="list" headingLevel={2} />
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+  </div>
+</section>

@@ -1,0 +1,56 @@
+---
+/**
+ * Consistent section header with an optional "view all" affordance.
+ * Used by every home-page block and archive so spacing never drifts.
+ *
+ * Pass `id` when the surrounding <section> uses aria-labelledby — the heading
+ * is what that attribute needs to point at.
+ */
+interface Props {
+  title: string;
+  id?: string;
+  description?: string;
+  href?: string;
+  linkLabel?: string;
+  as?: 'h2' | 'h3';
+  class?: string;
+}
+
+const {
+  title,
+  id,
+  description,
+  href,
+  linkLabel = 'View all',
+  as: Tag = 'h2',
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`mb-6 flex items-end justify-between gap-4 ${className}`}>
+  <div class="min-w-0">
+    <Tag id={id} class="text-xl font-extrabold tracking-tight text-[var(--text)] sm:text-2xl">
+      <span
+        class="mr-2.5 inline-block h-5 w-1 rounded-full bg-[var(--color-primary)] align-[-2px]"
+        aria-hidden="true"></span>
+      {title}
+    </Tag>
+    {
+      description && (
+        <p class="mt-1.5 max-w-2xl text-sm text-[var(--text-muted)]">{description}</p>
+      )
+    }
+  </div>
+
+  {
+    href && (
+      <a
+        href={href}
+        class="shrink-0 whitespace-nowrap text-sm font-semibold text-[var(--color-primary)]
+               transition-opacity hover:opacity-75"
+      >
+        {linkLabel} <span aria-hidden="true">&rarr;</span>
+      </a>
+    )
+  }
+</div>

@@ -1,0 +1,58 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE } from '../config/site.config';
+
+const email = SITE.organization.email;
+---
+
+<PageLayout
+  title="Contact"
+  description={`Get in touch with the ${SITE.name} editorial desk — corrections, tips, story pitches, security disclosures and general enquiries.`}
+  lede="Corrections, tips, pitches and disclosures — here is how to reach the right desk."
+>
+  <h2>Editorial</h2>
+  <p>
+    For corrections, factual disputes, story tips or article pitches, email
+    <a href={`mailto:${email}`}>{email}</a>. We read everything. We reply to anything that
+    needs a reply.
+  </p>
+  <p>
+    If you are reporting an error in a published article, include the article URL and the
+    specific claim you are disputing. Corrections that change the substance of a piece are
+    noted on the article itself.
+  </p>
+
+  <h2>Security disclosures</h2>
+  <p>
+    To report a vulnerability in this website, email
+    <a href={`mailto:${email}`}>{email}</a> with the subject line beginning
+    <code>SECURITY</code>. Please include reproduction steps and give us a reasonable
+    window to remediate before publishing.
+  </p>
+  <p>
+    We do not operate a paid bug bounty. We will credit reporters who ask to be credited.
+  </p>
+
+  <h2>Press and speaking</h2>
+  <p>
+    For interview requests, commentary or conference enquiries, use the same address and
+    include your deadline.
+  </p>
+
+  <h2>What we do not accept</h2>
+  <ul>
+    <li>Paid guest posts, sponsored articles or link insertions.</li>
+    <li>Requests to remove or amend accurate published reporting.</li>
+    <li>Unsolicited AI-generated article submissions.</li>
+  </ul>
+  <p>
+    See the <a href="/editorial-policy">editorial policy</a> for the reasoning behind
+    these.
+  </p>
+
+  <h2>Response times</h2>
+  <p>
+    We are a small desk. Security disclosures are triaged within two business days;
+    everything else may take longer.
+  </p>
+</PageLayout>

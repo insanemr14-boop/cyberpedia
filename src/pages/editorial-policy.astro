@@ -1,0 +1,106 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE } from '../config/site.config';
+---
+
+<PageLayout
+  title="Editorial Policy"
+  description={`How ${SITE.name} researches, writes, reviews, corrects and discloses — the standards every published article is held to.`}
+  lede="The standards every article on this site is held to."
+  lastUpdated={new Date('2026-08-02')}
+>
+  <h2>Purpose</h2>
+  <p>
+    {SITE.name} exists to make cybersecurity legible to the people responsible for
+    defending systems. That means accuracy over speed, specificity over hedging, and
+    usefulness over engagement.
+  </p>
+
+  <h2>Accuracy and sourcing</h2>
+  <ul>
+    <li>
+      Technical claims are verified against primary sources — vendor advisories, standards
+      documents, source code or first-hand testing — before publication.
+    </li>
+    <li>
+      We do not publish invented statistics. Where a figure is cited, it is attributed. If
+      we cannot attribute it, we do not use it.
+    </li>
+    <li>
+      Vulnerability identifiers, technique IDs and standard references are checked against
+      the issuing body rather than reproduced from secondary coverage.
+    </li>
+    <li>
+      Where reporting is developing or contested, we say so explicitly rather than
+      projecting false certainty.
+    </li>
+  </ul>
+
+  <h2>Defensive framing</h2>
+  <p>
+    Offensive technique is covered only to the depth required for defenders to detect and
+    prevent it. We do not publish working exploit code, ready-to-run attack tooling, or
+    operational guidance for compromising systems the reader does not own or have written
+    authorisation to test.
+  </p>
+
+  <h2>Independence</h2>
+  <ul>
+    <li>We do not accept payment for coverage, placement or favourable framing.</li>
+    <li>No vendor, sponsor or advertiser has pre-publication review rights.</li>
+    <li>
+      Any commercial relationship relevant to a piece — affiliate arrangement, sponsorship,
+      or provided hardware or licences — is disclosed within that article.
+    </li>
+    <li>
+      Reviews assess what a tool or architecture genuinely does well and where it fails.
+      A review that finds no weaknesses has not been done properly.
+    </li>
+  </ul>
+
+  <h2>AI use</h2>
+  <p>
+    We are transparent about tooling. AI assistance may be used for research support,
+    drafting and editing. Every published article is reviewed by a human who is
+    accountable for its technical accuracy, and no article is published on the strength of
+    a model's output alone. We do not accept unsolicited AI-generated submissions.
+  </p>
+
+  <h2>Corrections</h2>
+  <ul>
+    <li>Factual errors are corrected as soon as they are confirmed.</li>
+    <li>
+      Substantive corrections — anything that changes a conclusion or a recommendation —
+      are noted on the article with the date of the change.
+    </li>
+    <li>
+      Typographical and formatting fixes are made silently.
+    </li>
+    <li>
+      Articles updated to reflect new information carry a visible updated date.
+    </li>
+  </ul>
+  <p>
+    Report an error via the <a href="/contact">contact page</a>.
+  </p>
+
+  <h2>Unpublishing</h2>
+  <p>
+    We do not remove accurate published reporting on request. Where a legal or safety
+    concern is raised, we will review it, and any resulting change will be recorded on the
+    article rather than made silently.
+  </p>
+
+  <h2>Authorship</h2>
+  <p>
+    Articles are attributed to the editorial desk responsible for them. Each desk owns the
+    technical review for its subject area. Attribution is never used to imply credentials
+    the author does not hold.
+  </p>
+
+  <h2>Reader interest first</h2>
+  <p>
+    Where the interests of a vendor, an advertiser or our own traffic conflict with the
+    interests of a reader trying to secure a system, the reader wins.
+  </p>
+</PageLayout>

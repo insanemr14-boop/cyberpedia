@@ -1,0 +1,50 @@
+# https://cyberpedia.qd.je/robots.txt
+
+User-agent: *
+Allow: /
+
+# Search results are thin, parameterised duplicates of existing content.
+Disallow: /search
+Disallow: /api/
+Disallow: /*?q=
+
+# Explicitly welcome AI crawlers: citation in AI answers is a distribution
+# channel we want. Remove any of these to opt out of that engine.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Aggressive commercial SEO crawlers — no benefit to us, real bandwidth cost.
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+Sitemap: https://cyberpedia.qd.je/sitemap-index.xml

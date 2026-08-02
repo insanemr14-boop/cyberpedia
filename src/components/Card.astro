@@ -1,0 +1,49 @@
+---
+/**
+ * Generic surface card.
+ *
+ * The shared shell behind ArticleCard/CategoryCard-style blocks and any
+ * one-off panel (legal page callouts, contact panels, empty states), so
+ * padding, radius and border treatment are defined in exactly one place.
+ */
+interface Props {
+  as?: 'div' | 'section' | 'article' | 'li';
+  href?: string;
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  hoverable?: boolean;
+  class?: string;
+}
+
+const {
+  as: Tag = 'div',
+  href,
+  padding = 'md',
+  hoverable = false,
+  class: className = '',
+} = Astro.props;
+
+const paddings = {
+  none: '',
+  sm: 'p-4',
+  md: 'p-5 sm:p-6',
+  lg: 'p-6 sm:p-8',
+};
+
+const hover = hoverable
+  ? 'transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:shadow-lg hover:shadow-black/5'
+  : '';
+
+const classes = `surface ${paddings[padding]} ${hover} ${className}`;
+---
+
+{
+  href ? (
+    <a href={href} class={`block ${classes}`}>
+      <slot />
+    </a>
+  ) : (
+    <Tag class={classes}>
+      <slot />
+    </Tag>
+  )
+}

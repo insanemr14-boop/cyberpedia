@@ -1,0 +1,257 @@
+---
+/**
+ * Article page. Composes breadcrumb, byline, hero, TOC, body, FAQ, author bio,
+ * share, related articles and the full structured-data graph.
+ */
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CategoryChip from '../components/CategoryChip.astro';
+import HeroArt from '../components/HeroArt.astro';
+import TOC from '../components/TOC.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Share from '../components/Share.astro';
+import AuthorBlock from '../components/Author.astro';
+import FAQ from '../components/FAQ.astro';
+import RelatedArticles from '../components/RelatedArticles.astro';
+import Newsletter from '../components/Newsletter.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import { SITE, CONTENT_TYPES } from '../config/site.config';
+import { getCategoryOrFallback } from '../config/categories';
+import { getAuthorOrFallback } from '../config/authors';
+import {
+  type Article,
+  readingTimeOf,
+  slugOf,
+  getRelatedArticles,
+  getTrendingArticles,
+} from '../lib/articles';
+import {
+  articleSchema,
+  authorSchema,
+  breadcrumbSchema,
+  faqSchema,
+  webPageSchema,
+} from '../lib/schema';
+
+interface Props {
+  article: Article;
+  headings: MarkdownHeading[];
+}
+
+const { article, headings } = Astro.props;
+const data = article.data;
+
+const slug = slugOf(article);
+const path = `/articles/${slug}`;
+const category = getCategoryOrFallback(data.category);
+const author = getAuthorOrFallback(data.author);
+const minutes = readingTimeOf(article);
+const wordCount = article.body?.split(/\s+/).filter(Boolean).length ?? 0;
+const typeMeta = CONTENT_TYPES[data.type];
+
+const related = await getRelatedArticles(article, SITE.pagination.relatedCount);
+const trending = (await getTrendingArticles(4)).filter((a) => a.id !== article.id).slice(0, 3);
+
+const ogImage = data.heroImage ?? `/og/${slug}.png`;
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: typeMeta.plural, href: typeMeta.href },
+  { name: category.name, href: `/category/${category.slug}/` },
+  { name: data.title, href: `${path}/` },
+];
+---
+
+<BaseLayout
+  title={data.seoTitle ?? data.title}
+  description={data.seoDescription ?? data.description}
+  image={ogImage}
+  imageAlt={data.heroAlt ?? data.title}
+  type="article"
+  keywords={data.tags}
+  publishedTime={data.publishDate}
+  modifiedTime={data.updatedDate}
+  authorName={author.name}
+  section={category.name}
+  schemaNodes={[
+    webPageSchema({
+      path,
+      title: data.seoTitle ?? data.title,
+      description: data.seoDescription ?? data.description,
+      breadcrumbPath: path,
+    }),
+    breadcrumbSchema(path, crumbs),
+    authorSchema(author),
+    articleSchema({
+      path,
+      title: data.title,
+      description: data.description,
+      publishDate: data.publishDate,
+      updatedDate: data.updatedDate,
+      author,
+      category,
+      tags: data.tags,
+      image: ogImage,
+      wordCount,
+      type: data.type,
+    }),
+    ...(data.faq?.length ? [faqSchema(path, data.faq)] : []),
+  ]}
+>
+  {SITE.features.readingProgress && <ReadingProgress />}
+
+  <div class="container-page py-8 sm:py-10">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      {/* ================= Main column ================= */}
+      <article>
+        {/* ---------- Header ---------- */}
+        <header>
+          <div class="flex flex-wrap items-center gap-2">
+            <CategoryChip category={data.category} size="md" />
+            <span
+              class="rounded-full border border-[var(--border)] px-2.5 py-1 text-xs
+                     font-semibold uppercase tracking-wide text-[var(--text-subtle)]"
+            >
+              {typeMeta.label}
+            </span>
+          </div>
+
+          <h1
+            class="mt-4 text-3xl font-extrabold leading-[1.15] tracking-tight text-[var(--text)] sm:text-4xl lg:text-[2.75rem]"
+          >
+            {data.title}
+          </h1>
+
+          <p class="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--text-muted)]">
+            {data.description}
+          </p>
+
+          <div
+            class="mt-6 flex flex-wrap items-center justify-between gap-4 border-y
+                   border-[var(--border)] py-4"
+          >
+            <AuthorBlock
+              author={author}
+              variant="byline"
+              publishDate={data.publishDate}
+              updatedDate={data.updatedDate}
+              readingTime={minutes}
+            />
+            <Share title={data.title} path={`${path}/`} />
+          </div>
+        </header>
+
+        {/* ---------- Hero ---------- */}
+        <figure class="mt-8 overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)]">
+          <div class="aspect-[2/1] w-full sm:aspect-[2.4/1]">
+            {
+              data.heroImage ? (
+                <img
+                  src={data.heroImage}
+                  alt={data.heroAlt ?? ''}
+                  width="1200"
+                  height="500"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  class="size-full object-cover"
+                />
+              ) : (
+                <HeroArt category={data.category} seed={slug} variant="banner" />
+              )
+            }
+          </div>
+        </figure>
+
+        {/* ---------- Inline TOC (narrow viewports only) ---------- */}
+        {
+          headings.length > 2 && (
+            <div class="surface mt-8 p-5 xl:hidden">
+              <TOC headings={headings} instance="inline" />
+            </div>
+          )
+        }
+
+        {/* ---------- Body ---------- */}
+        <div class="prose mt-10" data-article-body data-pagefind-body>
+          <slot />
+        </div>
+
+        {/* ---------- Tags ---------- */}
+        {
+          data.tags.length > 0 && (
+            <div class="mt-10 flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-6">
+              <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-subtle)]">
+                Tagged
+              </span>
+              {data.tags.map((tag) => (
+                <a
+                  href={`/tag/${tag}/`}
+                  class="rounded-full border border-[var(--border)] px-3 py-1 text-xs
+                         font-medium text-[var(--text-muted)] transition-colors
+                         hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                >
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          )
+        }
+
+        {/* ---------- Share (foot) ---------- */}
+        <div class="mt-6">
+          <Share title={data.title} path={`${path}/`} />
+        </div>
+
+        {/* ---------- FAQ ---------- */}
+        {data.faq && data.faq.length > 0 && <FAQ items={data.faq} class="mt-12" />}
+
+        {/* ---------- Author ---------- */}
+        <AuthorBlock author={author} variant="card" class="mt-12" />
+
+        {/* ---------- Comments placeholder ----------
+            No third-party comment embed is loaded by default: every mainstream
+            provider ships tracking scripts that would cost more in privacy and
+            Core Web Vitals than the feature returns. Mount a provider here
+            (or a Cloudflare Worker-backed thread) when comments are wanted. */}
+        {
+          SITE.features.comments && (
+            <section
+              id="comments"
+              class="surface mt-12 p-6 text-center"
+              aria-labelledby="comments-heading"
+              data-comments-mount
+            >
+              <h2 id="comments-heading" class="text-base font-bold text-[var(--text)]">
+                Join the discussion
+              </h2>
+              <p class="mx-auto mt-2 max-w-md text-sm text-[var(--text-muted)]">
+                Comments are not enabled on this article yet. Reach the editorial desk
+                directly with corrections or additions.
+              </p>
+              <a
+                href="/contact"
+                class="mt-4 inline-block rounded-lg border border-[var(--border)] px-4 py-2
+                       text-sm font-semibold text-[var(--text)] transition-colors
+                       hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+              >
+                Contact the editors
+              </a>
+            </section>
+          )
+        }
+      </article>
+
+      {/* ================= Sidebar ================= */}
+      <Sidebar headings={headings} trending={trending} class="hidden xl:block" />
+    </div>
+
+    {/* ---------- Related ---------- */}
+    <RelatedArticles articles={related} class="mt-16" />
+
+    {SITE.features.newsletter && <Newsletter variant="inline" class="mt-12 xl:hidden" />}
+  </div>
+</BaseLayout>

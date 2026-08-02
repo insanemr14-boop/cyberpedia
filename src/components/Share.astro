@@ -1,0 +1,173 @@
+---
+/**
+ * Share controls.
+ *
+ * Plain links for the social targets (no third-party SDKs, no tracking
+ * scripts, works without JS). Native share and copy-link are progressive
+ * enhancements that reveal themselves only when supported.
+ *
+ * Multi-instance safe: article pages render this twice (header and footer),
+ * so every handler is scoped to its own root element rather than to the first
+ * match in the document.
+ */
+import { SITE } from '../config/site.config';
+
+interface Props {
+  title: string;
+  path: string;
+  class?: string;
+}
+
+const { title, path, class: className = '' } = Astro.props;
+
+const url = new URL(path, SITE.url).toString();
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+
+const targets = [
+  {
+    label: 'Share on X',
+    href: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+    path: 'M18.9 2H22l-7.1 8.1L23.2 22h-6.5l-5.1-6.7L5.8 22H2.6l7.6-8.7L1.5 2H8l4.6 6.1L18.9 2Zm-1.1 18h1.8L7.3 3.9H5.4L17.8 20Z',
+  },
+  {
+    label: 'Share on LinkedIn',
+    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    path: 'M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.07-1.9-3.07-1.9 0-2.2 1.46-2.2 2.97V21h-4z',
+  },
+  {
+    label: 'Share on Reddit',
+    href: `https://www.reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
+    path: 'M22 12a2.1 2.1 0 0 0-3.6-1.5 10.3 10.3 0 0 0-5.2-1.6l.9-4.1 2.9.6a1.8 1.8 0 1 0 .2-1.4l-3.6-.8a.7.7 0 0 0-.8.5l-1.1 5.2a10.3 10.3 0 0 0-5.3 1.6A2.1 2.1 0 1 0 3.8 14a4 4 0 0 0 0 .6c0 3.1 3.7 5.6 8.2 5.6s8.2-2.5 8.2-5.6a4 4 0 0 0 0-.6A2.1 2.1 0 0 0 22 12ZM8.3 13.4a1.4 1.4 0 1 1 1.4 1.4 1.4 1.4 0 0 1-1.4-1.4Zm7.6 3.9a5.6 5.6 0 0 1-3.9 1.2 5.6 5.6 0 0 1-3.9-1.2.5.5 0 0 1 .7-.7 4.7 4.7 0 0 0 3.2.9 4.7 4.7 0 0 0 3.2-.9.5.5 0 1 1 .7.7Zm-.6-2.5a1.4 1.4 0 1 1 1.4-1.4 1.4 1.4 0 0 1-1.4 1.4Z',
+  },
+  {
+    label: 'Share on Hacker News',
+    href: `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${encodedTitle}`,
+    path: 'M3 3h18v18H3zm6.1 4H7l3.9 6.6V17h2.2v-3.4L17 7h-2.1l-2.8 4.9L9.1 7z',
+  },
+];
+---
+
+<div class={`flex flex-wrap items-center gap-2 ${className}`} data-share-root>
+  <span class="mr-1 text-xs font-semibold uppercase tracking-wider text-[var(--text-subtle)]">
+    Share
+  </span>
+
+  {
+    targets.map((target) => (
+      <a
+        href={target.href}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        aria-label={target.label}
+        title={target.label}
+        class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+               text-[var(--text-muted)] transition-colors
+               hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+      >
+        <svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d={target.path} />
+        </svg>
+      </a>
+    ))
+  }
+
+  <button
+    type="button"
+    data-share-native
+    hidden
+    aria-label="Share via device"
+    title="Share"
+    class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+           text-[var(--text-muted)] transition-colors
+           hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+  >
+    <svg
+      class="size-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"></path>
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    data-share-copy
+    data-url={url}
+    aria-label="Copy link"
+    title="Copy link"
+    class="grid size-9 place-items-center rounded-lg border border-[var(--border)]
+           text-[var(--text-muted)] transition-colors
+           hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+  >
+    <svg
+      class="size-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path>
+      <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path>
+    </svg>
+  </button>
+
+  <span
+    data-share-status
+    role="status"
+    aria-live="polite"
+    class="text-xs text-[var(--color-success)]"></span>
+</div>
+
+<script>
+  // Scope every handler to its own root so multiple Share blocks on one page
+  // each work independently.
+  document.querySelectorAll<HTMLElement>('[data-share-root]').forEach((root) => {
+    const status = root.querySelector<HTMLElement>('[data-share-status]');
+
+    function flash(message: string) {
+      if (!status) return;
+      status.textContent = message;
+      window.setTimeout(() => {
+        status.textContent = '';
+      }, 2000);
+    }
+
+    const nativeButton = root.querySelector<HTMLButtonElement>('[data-share-native]');
+    if (nativeButton && typeof navigator.share === 'function') {
+      nativeButton.hidden = false;
+      nativeButton.addEventListener('click', async () => {
+        try {
+          await navigator.share({ title: document.title, url: window.location.href });
+        } catch {
+          // User dismissed the sheet — not an error worth surfacing.
+        }
+      });
+    }
+
+    root
+      .querySelector<HTMLButtonElement>('[data-share-copy]')
+      ?.addEventListener('click', async (event) => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const url = button.dataset.url ?? window.location.href;
+        try {
+          await navigator.clipboard.writeText(url);
+          flash('Link copied');
+        } catch {
+          flash('Copy failed');
+        }
+      });
+  });
+</script>

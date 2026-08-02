@@ -1,0 +1,103 @@
+---
+/**
+ * Author byline and bio block.
+ *   byline — compact inline attribution under the article title
+ *   card   — full bio block shown at the end of the article
+ */
+import type { Author } from '../config/authors';
+import { formatDate } from '../lib/articles';
+
+interface Props {
+  author: Author;
+  variant?: 'byline' | 'card';
+  publishDate?: Date;
+  updatedDate?: Date;
+  readingTime?: number;
+  class?: string;
+}
+
+const {
+  author,
+  variant = 'byline',
+  publishDate,
+  updatedDate,
+  readingTime,
+  class: className = '',
+} = Astro.props;
+
+const isCard = variant === 'card';
+const avatarSize = isCard ? 'size-14 text-base' : 'size-10 text-sm';
+---
+
+{
+  isCard ? (
+    <aside
+      class={`surface flex flex-col gap-4 p-5 sm:flex-row sm:p-6 ${className}`}
+      aria-label="About the author"
+    >
+      <span
+        class={`grid ${avatarSize} shrink-0 place-items-center rounded-full font-bold text-white`}
+        style={`background:${author.accent}`}
+        aria-hidden="true"
+      >
+        {author.initials}
+      </span>
+
+      <div class="min-w-0">
+        <p class="text-xs font-semibold uppercase tracking-wider text-[var(--text-subtle)]">
+          {author.role}
+        </p>
+        <h2 class="mt-0.5 text-base font-bold text-[var(--text)]">
+          <a href={`/authors/${author.slug}/`} class="hover:text-[var(--color-primary)]">
+            {author.name}
+          </a>
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{author.bio}</p>
+        <a
+          href={`/authors/${author.slug}/`}
+          class="mt-3 inline-block text-sm font-semibold text-[var(--color-primary)] hover:underline"
+        >
+          More from {author.name} <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </aside>
+  ) : (
+    <div class={`flex flex-wrap items-center gap-3 ${className}`}>
+      <span
+        class={`grid ${avatarSize} shrink-0 place-items-center rounded-full font-bold text-white`}
+        style={`background:${author.accent}`}
+        aria-hidden="true"
+      >
+        {author.initials}
+      </span>
+
+      <div class="min-w-0 text-sm">
+        <p class="font-semibold text-[var(--text)]">
+          <a href={`/authors/${author.slug}/`} class="hover:text-[var(--color-primary)]">
+            {author.name}
+          </a>
+        </p>
+        <p class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-[var(--text-subtle)]">
+          {publishDate && (
+            <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+          )}
+          {updatedDate && (
+            <>
+              <span aria-hidden="true">&middot;</span>
+              <span>
+                Updated{' '}
+                <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+              </span>
+            </>
+          )}
+          {readingTime && (
+            <>
+              <span aria-hidden="true">&middot;</span>
+              <span>{readingTime} min read</span>
+            </>
+          )}
+        </p>
+      </div>
+    </div>
+  )
+}

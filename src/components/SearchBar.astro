@@ -1,0 +1,69 @@
+---
+/**
+ * Search entry point.
+ *
+ * Submits to /search as a real GET form, so search works with JavaScript
+ * disabled and the query lands in a shareable URL. Pagefind takes over on the
+ * results page.
+ *
+ * `id` must be unique per instance — the navbar renders this twice (desktop
+ * and mobile drawer), and duplicate ids would break the label association.
+ */
+interface Props {
+  /** `inline` is the compact navbar field; `page` is the large hero field. */
+  variant?: 'inline' | 'page';
+  /** Unique DOM id for this instance. */
+  id?: string;
+  autofocus?: boolean;
+  value?: string;
+  class?: string;
+}
+
+const {
+  variant = 'inline',
+  id = `search-${variant}`,
+  autofocus = false,
+  value = '',
+  class: className = '',
+} = Astro.props;
+
+const isPage = variant === 'page';
+---
+
+<form
+  role="search"
+  action="/search"
+  method="get"
+  class={`relative ${isPage ? 'w-full' : 'w-full max-w-xs'} ${className}`}
+>
+  <label for={id} class="sr-only">Search articles</label>
+
+  <svg
+    class={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-subtle)] ${isPage ? 'size-5' : 'size-4'}`}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    aria-hidden="true"
+  >
+    <circle cx="11" cy="11" r="7"></circle>
+    <path d="m20 20-3.5-3.5"></path>
+  </svg>
+
+  <input
+    id={id}
+    type="search"
+    name="q"
+    value={value}
+    autofocus={autofocus}
+    data-search-input
+    placeholder={isPage ? 'Search articles, threats, tools…' : 'Search…'}
+    autocomplete="off"
+    class={`w-full rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]
+            text-[var(--text)] placeholder:text-[var(--text-subtle)]
+            transition-colors focus:border-[var(--brand)] focus:bg-[var(--bg)]
+            focus:outline-none
+            ${isPage ? 'py-3.5 pl-11 pr-4 text-base' : 'py-2 pl-9 pr-3 text-sm'}`}
+  />
+</form>

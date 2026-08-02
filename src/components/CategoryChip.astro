@@ -1,0 +1,39 @@
+---
+/**
+ * Category pill. Uses the category's own accent colour, mixed against the
+ * current surface so it stays legible in both themes.
+ */
+import { getCategoryOrFallback } from '../config/categories';
+
+interface Props {
+  category: string;
+  size?: 'sm' | 'md';
+  asLink?: boolean;
+  class?: string;
+}
+
+const { category, size = 'sm', asLink = true, class: className = '' } = Astro.props;
+const cat = getCategoryOrFallback(category);
+
+const sizing =
+  size === 'sm' ? 'text-[0.68rem] px-2 py-0.5' : 'text-xs px-2.5 py-1';
+
+const style = `--chip:${cat.accent}`;
+const base = `inline-flex items-center gap-1.5 rounded-full font-semibold uppercase tracking-wide
+  border transition-colors ${sizing} ${className}`;
+const colors =
+  'border-[color-mix(in_srgb,var(--chip)_35%,transparent)] bg-[color-mix(in_srgb,var(--chip)_12%,transparent)] text-[color-mix(in_srgb,var(--chip)_78%,var(--text))] hover:bg-[color-mix(in_srgb,var(--chip)_22%,transparent)]';
+const Tag = asLink ? 'a' : 'span';
+---
+
+<Tag
+  class={`${base} ${colors}`}
+  style={style}
+  {...asLink ? { href: `/category/${cat.slug}/` } : {}}
+>
+  <span
+    class="size-1.5 rounded-full bg-[var(--chip)]"
+    aria-hidden="true"
+  ></span>
+  {cat.name}
+</Tag>

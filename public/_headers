@@ -1,0 +1,53 @@
+# Cloudflare Pages HTTP headers.
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  # ---- Transport & framing ----
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+  # ---- Capability restrictions ----
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), xr-spatial-tracking=(), interest-cohort=()
+
+  # ---- Content Security Policy ----
+  # All executable JavaScript is bundled or served from /assets and /analytics
+  # on this origin — there are no inline <script> blocks with code in them.
+  #
+  # 'unsafe-inline' IS present in script-src for one reason: JSON-LD
+  # (<script type="application/ld+json">) is inline data, and browsers enforce
+  # script-src against it. Removing it would break every rich-result eligibility
+  # on the site. Per-page nonces are not available on a fully static build.
+  # If you later move to SSR, switch this to a nonce and drop 'unsafe-inline'.
+  #
+  # style-src allows 'unsafe-inline' because Astro inlines critical CSS and
+  # Shiki emits inline style attributes on code tokens.
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://cloudflareinsights.com https://*.clarity.ms; manifest-src 'self'; upgrade-insecure-requests
+
+# ---- Caching ----
+# Hashed build assets are immutable and can be cached forever.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=2592000
+
+/og/*
+  Cache-Control: public, max-age=2592000
+
+# Pagefind search index: revalidate so a rebuild is picked up promptly.
+/pagefind/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# HTML is revalidated on every request so published edits go live immediately.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/rss.xml
+  Cache-Control: public, max-age=3600

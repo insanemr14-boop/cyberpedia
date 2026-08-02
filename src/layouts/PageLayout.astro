@@ -1,0 +1,64 @@
+---
+/**
+ * Standard content page (About, Contact, legal pages).
+ * Renders a titled header plus a prose container for the slotted body.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { formatDate } from '../lib/articles';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Shown under the title on legal pages. */
+  lastUpdated?: Date;
+  lede?: string;
+  noindex?: boolean;
+}
+
+const { title, description, lastUpdated, lede, noindex = false } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: title, href: `${path}/` },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  noindex={noindex}
+  schemaNodes={[
+    webPageSchema({ path, title, description, breadcrumbPath: path }),
+    breadcrumbSchema(path, crumbs),
+  ]}
+>
+  <div class="container-page py-10 sm:py-14">
+    <Breadcrumb items={crumbs} class="mb-6" />
+
+    <header class="max-w-3xl">
+      <h1
+        class="text-3xl font-extrabold leading-tight tracking-tight text-[var(--text)] sm:text-4xl"
+      >
+        {title}
+      </h1>
+
+      {lede && <p class="mt-4 text-lg leading-relaxed text-[var(--text-muted)]">{lede}</p>}
+
+      {
+        lastUpdated && (
+          <p class="mt-4 text-sm text-[var(--text-subtle)]">
+            Last updated{' '}
+            <time datetime={lastUpdated.toISOString()}>{formatDate(lastUpdated)}</time>
+          </p>
+        )
+      }
+    </header>
+
+    <div class="prose mt-10">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
