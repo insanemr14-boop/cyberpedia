@@ -130,8 +130,12 @@ const crumbs = [
   async function loadPagefind() {
     if (pagefind) return pagefind;
     try {
-      // @ts-expect-error — generated at build time, absent in dev.
-      pagefind = await import('/pagefind/pagefind.js');
+      // The Pagefind bundle is produced by `pagefind --site dist` AFTER
+      // `astro build` finishes, so it does not exist while the bundler runs.
+      // The specifier is assembled at runtime (and marked @vite-ignore) so
+      // rolldown cannot try to statically resolve it and fail the build.
+      const specifier = ['', 'pagefind', 'pagefind.js'].join('/');
+      pagefind = await import(/* @vite-ignore */ specifier);
       return pagefind;
     } catch {
       return null;

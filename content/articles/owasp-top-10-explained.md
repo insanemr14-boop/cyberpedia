@@ -13,6 +13,15 @@ tags: ['owasp', 'secure-coding', 'vulnerability-management', 'threat-modeling', 
 publishDate: 2026-07-30
 featured: true
 draft: false
+faq:
+  - question: 'Can an application pass or fail the OWASP Top 10?'
+    answer: 'No. It is a prevalence-ranked awareness list assembled from aggregated vulnerability data plus a practitioner survey, not a requirements standard. Each entry is a bucket of dozens of CWEs, so a clean scanner report describes your tooling coverage rather than your application security. Use the Application Security Verification Standard when you need testable requirements.'
+  - question: 'What does the OWASP Top 10 leave out?'
+    answer: 'Business logic abuse is the largest gap. Coupon stacking, negative-quantity orders, workflow step skipping and approval bypass are per-application flaws with no generic signature, so they never aggregate into a CWE ranking. Race conditions, availability engineering, and many client-side issues sit in the same blind spot, and API-first products need the companion OWASP list.'
+  - question: 'How do you fix broken access control properly?'
+    answer: 'Enforce deny-by-default authorisation in one server-side place, and scope the resource query itself to the caller tenant so the fetch is incapable of returning a record they may not see. A check bolted on after the fetch is not enough. Declare a required permission per route so adding a route without one is a startup error.'
+  - question: 'What is the difference between the OWASP Top 10 and ASVS?'
+    answer: 'The Top 10 frames risk categories for a general audience. ASVS is a few hundred numbered, verifiable requirements organised by chapter and split into levels, and its requirements read like acceptance criteria, so they map to test cases and owners. Gap-assess against the ASVS level matching your risk, then use the Top 10 to explain why the backlog exists.'
 ---
 
 The OWASP Top 10 is the most cited document in application security and the most consistently misused. It is a ranked awareness list assembled from aggregated vulnerability data across hundreds of thousands of applications, supplemented by a practitioner survey for the flaw classes that automated testing cannot see. It tells you which categories of defect appear most often and cause the most damage. It does not tell you whether your application is secure.

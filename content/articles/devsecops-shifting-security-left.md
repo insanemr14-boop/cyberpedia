@@ -12,6 +12,15 @@ tags: ['ci-cd', 'sast', 'sca', 'secret-scanning', 'supply-chain', 'shift-left']
 publishDate: 2026-07-10
 featured: false
 draft: false
+faq:
+  - question: 'Which security checks should actually block a merge?'
+    answer: 'Only checks that are fast, deterministic, and produce findings the author can fix immediately. Secret scanning and a small curated infrastructure-as-code rule set qualify, as does diff-scoped SAST on high-confidence rules. Dependency findings should block only when both fixable and in a directly imported package. DAST should never block, because it is slow and results vary between runs.'
+  - question: 'Why do teams end up disabling their pipeline security gates?'
+    answer: 'Usually because scanners were switched to blocking mode on day one against a codebase nobody had ever scanned, producing thousands of untriaged findings and much slower builds. Someone adds a continue-on-error flag to unblock a release and every gate becomes advisory. Start new tools in report-only mode, baseline pre-existing findings, and gate on a narrow defensible rule set.'
+  - question: 'Does signing container images actually protect anything?'
+    answer: 'Only if something verifies the signature. Signing in CI without enforcement at the deployment boundary produces signatures nobody checks, so pair it with an admission controller or deployment policy that refuses unsigned images. Reference artifacts by digest rather than tag as well, since tags are mutable and a signature over a tag proves nothing.'
+  - question: 'How long should pull request CI take?'
+    answer: 'Keep the total under ten minutes, and treat that as a security requirement rather than a developer convenience. Slow pipelines push teams to batch changes, batching produces large pull requests, and large pull requests get reviewed badly. Parallelise scan jobs, cache vulnerability databases, and move full-repository scans to a nightly schedule that feeds a backlog.'
 ---
 
 "Shift left" started as a scheduling observation: defects found late cost more to fix than defects found early. It was true when it was said about testing and it remains true about security. Somewhere between the original insight and the current vendor market, it turned into a purchasing instruction — buy scanners, wire them into the pipeline, watch the dashboard go green.

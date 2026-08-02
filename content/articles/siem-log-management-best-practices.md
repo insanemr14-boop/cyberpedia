@@ -13,6 +13,15 @@ tags: ['log-management', 'detection-rules', 'data-retention', 'threat-detection'
 publishDate: 2026-07-08
 featured: false
 draft: false
+faq:
+  - question: 'Which log sources should a SIEM ingest first?'
+    answer: 'Identity provider audit and sign-in logs, because nearly every intrusion touches identity and the volume is low relative to detection value. Then EDR process telemetry, then cloud control plane logs, then filtered Windows Security events. DNS and proxy logs are close to indispensable for investigation but expensive to retain hot, which is what retention tiering exists to resolve.'
+  - question: 'How do you cut SIEM ingest cost without losing visibility?'
+    answer: 'Filter at the source or the collection tier rather than inside the SIEM, collecting only the specific Windows event IDs your detections reference instead of whole channels. Aggregate high-cardinality, low-variance telemetry such as firewall accept logs and flow records. Route a filtered stream to the SIEM for detection and a full-fidelity copy to object storage.'
+  - question: 'How long should security logs be retained?'
+    answer: 'Treat detection, investigation and compliance as three separate requirements. A workable split is seven to thirty days hot, thirty to ninety days warm, ninety days to a year in a searchable archive, and years in immutable object storage for regulatory needs. The searchable archive matters most, because intrusions are routinely discovered months after initial access.'
+  - question: 'How can you tell a SIEM has become just a log archive?'
+    answer: 'The symptoms are reliable. Nobody outside the SOC has run a query in the last quarter, detection rules were last modified when the platform was deployed, the team cannot name which sources their top ten detections depend on, alert volume has been flat while the estate grew, and investigations happen in the EDR console instead.'
 ---
 
 The most common SIEM failure is not a missed detection. It is a platform that ingests several terabytes a day, costs more than the security team's salary budget, and is queried by three people during audit week. The logs are all there. Nobody is looking at them, and no detection depends on most of them.

@@ -12,6 +12,15 @@ tags: ['zero-knowledge', 'key-derivation', 'secrets-management', 'enterprise-sec
 publishDate: 2026-06-25
 featured: false
 draft: false
+faq:
+  - question: 'Should machine secrets be stored in a password manager?'
+    answer: 'No. A password manager is optimised for human-in-the-loop access to credentials on systems you do not control. Machine secrets belong in a secrets platform with workload identity and short-lived dynamic issuance. Putting deployment credentials in a shared vault folder makes them long-lived, because rotation needs human coordination, and collapses access attribution at the target system.'
+  - question: 'What does zero knowledge really mean for a password manager?'
+    answer: 'It means the master password never reaches the server in a form that can decrypt anything. It is stretched locally by a key derivation function into a master key, which splits into an authentication value sent to the server and a key-wrapping key that never leaves the client. Recovery mechanisms are where that claim usually acquires an asterisk.'
+  - question: 'How should enterprise vault recovery be designed?'
+    answer: 'Administrator recovery via organisational key escrow is usually the right answer, where the client encrypts the account key to an organisation public key at enrolment. Gate it on three controls: dual authorisation so no single administrator can invoke it alone, mandatory notification to the affected user, and an immutable audit record. Verify the product enforces those rather than merely permitting them.'
+  - question: 'Is a browser built-in password manager good enough for a company?'
+    answer: 'For an individual it is a genuine improvement over reused passwords. For an organisation it is not sufficient, because sharing is ad hoc, policy enforcement is coarse, audit trails are effectively nonexistent, and credentials cannot be recovered from a departed employee or attributed during an investigation. A dedicated service is the usual default.'
 ---
 
 Choosing a password manager for an organisation is not a feature comparison. Almost every product in the category has folders, sharing, browser extensions and an admin console. The differences that matter are architectural, and they only become visible when you ask what happens in three specific scenarios: the vendor's servers are fully compromised, an employee leaves without handing over their vault, and a court or regulator asks who accessed a given credential and when.

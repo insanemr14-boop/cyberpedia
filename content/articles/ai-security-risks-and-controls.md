@@ -12,6 +12,15 @@ tags: ['prompt-injection', 'llm-security', 'owasp-llm-top-10', 'agentic-systems'
 publishDate: 2026-08-01
 featured: true
 draft: false
+faq:
+  - question: 'Can prompt injection be fully prevented?'
+    answer: 'No. A language model has no separation between instructions and data, so there is no equivalent of parameterised queries. Mitigation is layered and partial: classifier-based detection raises the effort required but does not stop a determined attacker. The durable approach is architectural, limiting what a successful injection can reach by scoping tools narrowly and binding agent actions to the requesting user authorisation.'
+  - question: 'What is the difference between direct and indirect prompt injection?'
+    answer: 'Direct injection is a user typing adversarial instructions into a prompt, and the blast radius is bounded by that user own authorisation. Indirect injection arrives inside content the model retrieves as data, such as a web page, a document in a RAG index, an email, or a code comment. There the user is the victim and the model acts with their privileges.'
+  - question: 'Which agent capabilities combine into a data exfiltration path?'
+    answer: 'Any agent combining a content-ingestion capability, a sensitive-data-access capability, and an outbound capability can be driven to exfiltrate. Each is defensible alone, but the combination is a data loss channel that no individual review would flag. Treat that triad as an architectural review trigger, and deny outbound capabilities such as email and external HTTP fetch by default.'
+  - question: 'Is it safe to put secrets in a system prompt?'
+    answer: 'No. A system prompt is not a confidentiality boundary, and its contents should be assumed recoverable. Keep credentials, internal URLs, and business rules with security significance out of it entirely. This maps to LLM07 System Prompt Leakage in the OWASP Top 10 for LLM Applications, where the residual risk stays low only if the rule is followed consistently.'
 ---
 
 Security teams reviewing their first LLM feature usually arrive with the wrong mental model. They look for injection in the SQL sense — untrusted input reaching an interpreter — and reach for the familiar answer of parameterisation. That answer does not exist here. A language model has no separation between instructions and data. Everything in the context window is the same kind of thing, and the model decides what to treat as a command based on plausibility rather than provenance.

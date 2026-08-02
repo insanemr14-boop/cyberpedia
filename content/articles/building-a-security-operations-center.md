@@ -12,6 +12,15 @@ tags: ['detection-engineering', 'alert-triage', 'incident-response', 'security-m
 publishDate: 2026-07-22
 featured: false
 draft: false
+faq:
+  - question: 'Do you need a physical room to run a SOC?'
+    answer: 'No. A security operations centre is a set of workflows, a staffing model, a detection backlog, and a measurement discipline, most of which can exist inside a case management tool and a chat channel. Teams that start with the room and the video wall usually end up with an expensive help desk that forwards alerts to email.'
+  - question: 'Why are strict Tier 1, 2 and 3 SOC models falling out of favour?'
+    answer: 'Tier 1 is defined by what analysts are not allowed to do, applying a decision tree they did not write against rules they cannot change, which drives attrition. The work also does not decompose by queue position, since a commodity phishing alert and a suspicious OAuth consent grant need very different skills. Skill-based routing with rotation holds up better.'
+  - question: 'What is a benign true positive and why does the category matter?'
+    answer: 'A benign true positive means the rule fired correctly, the activity genuinely happened, and it was authorised. Teams most often omit this disposition code and conflate it with false positives, which leads them to retire detections that are working. Without a controlled disposition vocabulary you cannot compute a per-rule true-positive rate at all.'
+  - question: 'Should we build a SOC in-house or buy MDR?'
+    answer: 'Frame it by which capabilities depend on context a provider cannot hold. Buy commodity round-the-clock triage unless you already have the scale for eight to ten analysts. Keep in-house the detection content tied to your business logic, the authority to contain your own systems, and enough analytical capability to challenge the provider conclusions.'
 ---
 
 A security operations centre is not a room with screens on the wall. It is a set of workflows, a staffing model, a detection backlog, and a measurement discipline — most of which can exist entirely inside a case management tool and a chat channel. Teams that start with the room usually end up with an expensive help desk that forwards alerts to email.

@@ -13,6 +13,15 @@ tags: ['nist-sp-800-207', 'microsegmentation', 'identity', 'policy-enforcement',
 publishDate: 2026-07-20
 featured: true
 draft: false
+faq:
+  - question: 'Can you buy Zero Trust as a product?'
+    answer: 'No. NIST SP 800-207 describes an architecture built from a Policy Decision Point, comprising a policy engine and a policy administrator, plus Policy Enforcement Points sitting inline in the data path. No single product implements all of it. Most environments already have enforcement points; the gap is that each consults its own private, statically configured policy.'
+  - question: 'What is the core principle of Zero Trust?'
+    answer: 'Network location must stop being an input to authorisation decisions. A packet arriving from an internal range gets no more credit than one from a coffee shop. Everything else, including per-session grants, dynamic policy using identity, device posture and application state, and continuous re-evaluation, follows from refusing to treat the corporate LAN as a credential.'
+  - question: 'Is device posture reported by an agent enough for authorisation?'
+    answer: 'Only when it is attested rather than self-reported. A device claiming disk encryption over an API is not evidence, and MDM compliance state or EDR heartbeat data is forgeable by an attacker with local administrator rights. A TPM 2.0 boot attestation, or a private key held in a TPM or secure enclave, is not.'
+  - question: 'What order should a Zero Trust rollout follow?'
+    answer: 'Inventory and observe flows first, because you cannot write policy for traffic you cannot see. Then consolidate identity on one provider with phishing-resistant MFA for administrators. Then put an identity-aware proxy in front of web applications, segment crown jewels by blast radius, push enforcement down to workloads, and finally close the loop with continuous evaluation.'
 ---
 
 Every vendor that sells a firewall, a proxy, an agent, or an identity broker now sells Zero Trust. Almost none of them sell an architecture. NIST Special Publication 800-207, published in August 2020, is roughly fifty pages of design principles and a logical component model. It names no products. Reading it end to end is the cheapest inoculation available against the marketing.

@@ -12,6 +12,15 @@ tags: ['shared-responsibility', 'aws', 'azure', 'gcp', 'iam', 'misconfiguration'
 publishDate: 2026-07-25
 featured: true
 draft: false
+faq:
+  - question: 'What does a cloud provider actually secure under the shared responsibility model?'
+    answer: 'The provider secures physical facilities, hardware, the hypervisor, the host operating system, the network fabric, and the availability of managed service control planes. You secure everything that expresses intent: configuration, identity, data classification, network exposure, encryption key policy, and logging. The provider guarantees your configuration is applied faithfully, never that your configuration is correct.'
+  - question: 'Which responsibilities stay yours in SaaS as well as IaaS?'
+    answer: 'Four categories never change hands regardless of service model: identity and access management, network exposure, data classification and retention, and logging and monitoring configuration. Concentrate audit effort there. In SaaS the usual compromise path is a user without phishing-resistant MFA, an over-scoped OAuth application, legacy authentication left enabled, or a permissive external sharing default.'
+  - question: 'Is provider-managed encryption at rest good enough?'
+    answer: 'For most workloads it is genuinely good and is the default nearly everywhere. It does not let you revoke access cryptographically or prove key custody to an auditor. If your threat model or compliance regime requires either, use customer-managed keys with an explicit key policy, and test that disabling a key really does render the data inaccessible.'
+  - question: 'Where should cloud audit logs be stored?'
+    answer: 'Outside the blast radius of the account they describe. Attackers routinely disable logging as an early action, so destination isolation and integrity validation matter more than log volume. Ship control plane and data access logs to a single archive account with write-once retention, and verify that data access logging is enabled, since several providers leave it off by default.'
 ---
 
 Every major cloud provider publishes a version of the same picture: a stack of horizontal bars, some shaded blue for the provider, some shaded orange for you. It is printed on conference booth backdrops and pasted into the second slide of every cloud migration deck. It is also the single most misread diagram in enterprise computing, because it describes a legal and operational boundary using a visual metaphor that implies far more coverage than it delivers.

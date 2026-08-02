@@ -12,6 +12,15 @@ tags: ['pyramid-of-pain', 'detection-engineering', 'mitre-attack', 'intel-lifecy
 publishDate: 2026-06-30
 featured: false
 draft: false
+faq:
+  - question: 'What makes a threat indicator actionable?'
+    answer: 'Context, provenance, confidence and an expiry. A bare IP address is nearly worthless. The same address annotated with what was hosted there, which campaign used it, when it was first and last observed, whether it is dedicated attacker infrastructure or a compromised host, and the source confidence lets a defender decide to block, alert, or hunt retrospectively.'
+  - question: 'What is the Pyramid of Pain used for?'
+    answer: 'It ranks indicator types by how much it costs an adversary to change them. Hashes are trivial to alter and last hours, addresses and domains last days to weeks, while host and network artefacts, tools, and tradecraft cost progressively more. The instruction that follows is to automate the bottom three levels and spend analyst time on the top three.'
+  - question: 'Should we buy threat intelligence feeds?'
+    answer: 'Not before writing intelligence requirements. Feeds purchased first produce a pipeline rather than intelligence, and a feed delivering a million hashes is supplying the least painful detection class in enormous volume. Ten to fifteen prioritised, decision-linked questions, reviewed quarterly with the people who own those decisions, do more for a programme than any subscription.'
+  - question: 'How do you measure a threat intelligence programme?'
+    answer: 'By outcomes rather than inputs. Defensible measures include ATT&CK coverage change for the adversaries named in your requirements, true-positive yield of intel-sourced detections, time from publication of a new technique to deployed detection, retrospective sweep hit rate, and documented decisions where intelligence was a stated input. Retiring a source that produces nothing is a success.'
 ---
 
 Ask a security team what their threat intelligence program produces and you will usually get an answer about inputs: how many feeds they subscribe to, how many indicators land in the platform each day, how many vendor portals they have access to. Ask what decision changed last quarter because of intelligence, and the room goes quiet.

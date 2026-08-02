@@ -12,6 +12,15 @@ tags: ['webauthn', 'passkeys', 'mfa', 'argon2', 'session-management', 'oauth']
 publishDate: 2026-07-12
 featured: false
 draft: false
+faq:
+  - question: 'Is TOTP phishing resistant?'
+    answer: 'No. A time-based one-time passcode is a shared secret the user can be induced to type into a convincing fake login page, and a real-time phishing proxy replays it inside the attacker session before it expires. TOTP is a meaningful improvement over SMS and worth broad deployment, but it should not be described internally as phishing resistant.'
+  - question: 'What Argon2id parameters should be used for password hashing?'
+    answer: 'OWASP publishes equivalent-strength configurations that trade memory against iterations: roughly 19 MiB with 2 iterations, 12 MiB with 3, or 7 MiB with 5, at one degree of parallelism. Pick the highest memory cost your authentication tier absorbs at peak login rate, then raise iterations until a single verification costs around half a second to a second of server work.'
+  - question: 'Why is WebAuthn phishing resistant when other factors are not?'
+    answer: 'Because the browser, not the user, decides which credential is eligible, and it decides based on the origin of the requesting page. The key pair is scoped to a relying party identifier and the actual origin is stamped into the signed client data. A lookalike domain cannot obtain a usable assertion, and there is no code for a victim to transcribe.'
+  - question: 'Do synced passkeys weaken security?'
+    answer: 'They move part of account security onto the sync provider account and its recovery process, while solving the largest obstacle to hardware-based authentication, which is that losing the device means losing the account. For consumer products that trade-off is almost always correct. For administrators, require device-bound credentials and register at least two authenticators.'
 ---
 
 Most authentication incidents are not cryptographic failures. They are architectural ones: a password store using a fast hash, a second factor that an attacker can relay in real time, a session that never expires, or a refresh token with no reuse detection. The primitives have been solved for years. The assembly is where systems break.

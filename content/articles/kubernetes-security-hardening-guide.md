@@ -13,6 +13,15 @@ tags: ['kubernetes', 'rbac', 'network-policy', 'admission-control', 'container-s
 publishDate: 2026-06-22
 featured: false
 draft: false
+faq:
+  - question: 'Which Kubernetes RBAC permissions are effectively namespace administrator?'
+    answer: 'Treat escalate, bind and impersonate as privileged, since they let a principal grant itself rights or act as another subject entirely. Also treat create on pods, pods/exec and pods/ephemeralcontainers the same way, because each yields code execution or access to any secret and service account in the namespace. Get on secrets is direct credential theft.'
+  - question: 'Does a managed control plane make a Kubernetes cluster secure?'
+    answer: 'No. EKS, AKS and GKE run and patch the API server, scheduler, controller manager and etcd, and encrypt etcd at rest. None of that constrains what runs on your nodes. Node pools, container images, RBAC bindings, network policy, admission control and secrets handling all remain yours, and that is where the realistic attack paths sit.'
+  - question: 'Why does a default-deny network policy break a namespace?'
+    answer: 'Almost always because the DNS egress allowance is missing. Applying default-deny egress without permitting UDP and TCP port 53 to kube-dns breaks name resolution across the namespace, the rollout gets reverted, and network policy gets written off as disruptive. Write the DNS exception in the same change as the deny, and confirm your CNI enforces NetworkPolicy at all.'
+  - question: 'Are Kubernetes Secrets encrypted?'
+    answer: 'In their API representation they are base64-encoded, not encrypted, so anyone holding get on secrets in a namespace has the plaintext. Encryption at rest in etcd is a separate control configured on the API server, generally enabled on managed control planes but explicit elsewhere, and enabling it does not retroactively encrypt existing secrets until they are rewritten.'
 ---
 
 A freshly provisioned Kubernetes cluster is a flat network in which every pod can reach every other pod, every workload runs with a mounted service account token, and the default namespace has no constraints on what a container may request from the kernel. That is not a criticism of the project — Kubernetes ships permissive defaults because it is a platform, and platforms that break on first use do not get adopted. But it means the security posture of your cluster is entirely a function of what you added after `kubectl create cluster` returned.

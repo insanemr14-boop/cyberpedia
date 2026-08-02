@@ -12,6 +12,15 @@ tags: ['vlan', 'microsegmentation', 'firewall-rules', 'east-west-traffic', 'blas
 publishDate: 2026-07-05
 featured: false
 draft: false
+faq:
+  - question: 'Is a VLAN by itself network segmentation?'
+    answer: 'No. A VLAN is a layer 2 broadcast domain boundary, and the moment you configure a routed interface for each VLAN, traffic flows between them unless something filters it. A subnet defines an address range and enforces nothing on its own. VLANs and subnets create boundaries; firewalls, host firewalls and security groups are what enforce them.'
+  - question: 'Where should the first segmentation boundaries go?'
+    answer: 'Between the systems most likely to be compromised first and the systems whose compromise would be existential. The first group is user endpoints, internet-facing services, contractor devices, and unpatchable embedded devices such as cameras and printers. The second is the identity directory, backups and their management plane, the hypervisor or cloud control plane, CI/CD, and regulated data stores.'
+  - question: 'Which east-west controls give the most risk reduction?'
+    answer: 'Blocking workstation-to-workstation traffic on SMB port 445, RDP port 3389, WinRM ports 5985 and 5986, and SSH port 22 delivers more risk reduction per hour of effort than any other segmentation work. Normal users have no reason to open a share or a remote desktop session on a colleague machine. Scope exceptions to named management servers.'
+  - question: 'How do you roll out segmentation without breaking production?'
+    answer: 'Deploy rules in log-only or permit-and-log mode and run them for a full business cycle of at least a month so month-end processing appears. Move one segment at a time, starting with guest Wi-Fi or IoT. Never renumber and filter in the same change, write the rollback before the change, and give every exception an expiry date.'
 ---
 
 Most networks in small and mid-sized organizations are flat by accident. Someone stood up a /16, everything got an address, and it worked. Then the company grew, the CCTV recorder and the accounting server and the guest Wi-Fi all landed in the same broadcast domain, and now a single compromised laptop can reach every device the organization owns.

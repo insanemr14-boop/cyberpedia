@@ -1,0 +1,32 @@
+{
+  // Cloudflare Workers Static Assets configuration.
+  //
+  // Only needed if you deploy via the *Workers* flow (the one that asks for a
+  // "Deploy command"). The Pages flow ignores this file entirely and needs no
+  // deploy command at all.
+  //
+  //   Build command:   npm run build
+  //   Deploy command:  npx wrangler deploy
+  //
+  // The site is fully static, so this Worker has no server-side code — it just
+  // serves the pre-rendered output in ./dist from Cloudflare's edge.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cyberpedia",
+  "compatibility_date": "2026-08-02",
+
+  "assets": {
+    "directory": "./dist",
+
+    // Serve the built 404 page for unmatched routes instead of a bare
+    // Cloudflare error. Astro emits it at dist/404.html.
+    "not_found_handling": "404-page",
+
+    // Redirect /path/ -> /path so URLs match the canonicals we emit.
+    // Astro builds directory-format output, so both resolve to the same page.
+    "html_handling": "auto-trailing-slash"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

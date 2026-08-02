@@ -12,6 +12,15 @@ tags: ['kill-chain', 'double-extortion', 'initial-access-brokers', 'lateral-move
 publishDate: 2026-07-28
 featured: true
 draft: false
+faq:
+  - question: 'How long are ransomware operators in a network before encryption?'
+    answer: 'Typically days to weeks. Encryption is the last stage rather than the attack itself, and by the time ransom notes appear the operator has usually mapped the estate, stolen credentials, copied data out, and attacked the backups. Every stage before encryption is slower, noisier, and dependent on legitimate administrative tooling that generates telemetry you can detect on.'
+  - question: 'Which stage of a ransomware attack is easiest to detect?'
+    answer: 'Discovery and lateral movement. An affiliate arriving in an unfamiliar network has to enumerate accounts, groups, remote systems, domain trusts and shares, and the signature is volumetric and sequential rather than individually suspicious. Twenty distinct discovery commands from one process tree within five minutes, by an account that normally only opens a browser, is not normal.'
+  - question: 'Do good backups still protect against ransomware?'
+    answer: 'They are necessary but no longer sufficient. Double extortion means data is stolen before encryption, so the threat shifts from unavailability to publication. Backups also have to be immutable and credential-isolated, because backup infrastructure and hypervisor management planes are targeted specifically. A backup that has never been restored under time pressure is a hypothesis, not a control.'
+  - question: 'Which initial access vectors do ransomware operators use most?'
+    answer: 'Three dominate real intrusions: exploitation of internet-facing edge devices such as VPN concentrators and file transfer appliances, valid stolen credentials used against remote access lacking phishing-resistant MFA, and phishing or help-desk social engineering that resets MFA enrolment. Breaking the chain here is mostly asset inventory and patch cadence work rather than detection engineering.'
 ---
 
 Encryption is the last thing that happens. By the time ransom notes land on desktops and file shares stop resolving, the operator has usually been resident in the environment for days or weeks, has already read the cyber insurance policy, has already copied the finance department's file share to a cloud storage bucket, and has already deleted the backups. The encryption event is not the attack. It is the invoice.

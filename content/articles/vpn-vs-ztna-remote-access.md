@@ -12,6 +12,15 @@ tags: ['ztna', 'remote-access', 'wireguard', 'ipsec', 'identity-aware-proxy']
 publishDate: 2026-06-18
 featured: false
 draft: false
+faq:
+  - question: 'What is the core difference between a VPN and ZTNA?'
+    answer: 'Granularity, and what an attacker inherits from a stolen session. A VPN authenticates a person onto the network and assigns a routable address, so reachability afterwards depends on internal routing and firewall rules. ZTNA brokers access to a named application per session, with connectors dialling outbound, so the client is never placed on the network at all.'
+  - question: 'Is a VPN ever still the right choice?'
+    answer: 'Yes, in several cases: site-to-site links between offices, data centres and cloud networks; operational technology and industrial protocols that break under application-layer brokering; network device administration over SSH and IPMI through a hardened bastion; sovereignty or contractual constraints that forbid a third-party control plane; and small teams where per-user ZTNA licensing outweighs the benefit.'
+  - question: 'What are the main failure modes of ZTNA?'
+    answer: 'A broker outage stops all access, so the break-glass path must be designed and rehearsed in advance. Connector compromise yields a foothold adjacent to the application. Agentless mode provides near-zero device assurance while appearing to satisfy a posture requirement. Policy sprawl and incomplete protocol coverage push teams into keeping a shadow VPN for the exceptions.'
+  - question: 'How do you migrate from VPN to ZTNA?'
+    answer: 'Run both and move application by application. Catalogue every remote-access destination, its protocol and its user population, then move browser-accessible internal applications first and agent-based TCP applications second. Critically, remove each application route from the VPN as it moves, or the old unrestricted path silently overrides every ZTNA policy you wrote.'
 ---
 
 A VPN answers the question "should this person be on the network." ZTNA answers "should this person, on this device, reach this application, right now." Those are different questions, and the gap between them is the entire argument.
