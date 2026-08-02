@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Publish on every push to the production branch.
+  push:
+    branches: [main]
+  # Allow a manual redeploy from the Actions tab without a code change.
+  workflow_dispatch:
+
+# Least-privilege token: read the repo, publish to Pages, and mint the OIDC
+# token deploy-pages uses. Nothing else.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race. Queue rather than cancel, so an in-flight
+# publish is not left half-applied.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Astro 7 requires Node 20+.
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        # Runs `astro build` then indexes the output with Pagefind.
+        run: npm run build
+
+      - name: Verify build output
+        # Fail loudly here rather than deploying an empty or broken site.
+        run: |
+          test -f dist/index.html || { echo "::error::dist/index.html missing"; exit 1; }
+          test -f dist/404.html   || { echo "::error::dist/404.html missing"; exit 1; }
+          test -d dist/pagefind   || echo "::warning::pagefind index missing — search will fall back"
+          echo "Pages built: $(find dist -name '*.html' | wc -l)"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
