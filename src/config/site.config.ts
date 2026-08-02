@@ -36,14 +36,28 @@ export interface SiteConfig {
     legalName: string;
     foundingYear: number;
     email: string;
+    phone: string;
+    /** E.164 format, used for tel: and WhatsApp links. */
+    phoneE164: string;
+    address: {
+      locality: string;
+      region: string;
+      country: string;
+      countryCode: string;
+    };
+    hours: string;
+    /** Schema.org openingHours format. */
+    hoursSpec: string;
+    responseTime: string;
     logoPath: string;
   };
   social: {
+    instagram?: string;
+    linkedin?: string;
+    whatsapp?: string;
     twitter?: string;
     twitterHandle?: string;
     github?: string;
-    linkedin?: string;
-    mastodon?: string;
     rss: string;
   };
   /**
@@ -95,16 +109,29 @@ export const SITE: SiteConfig = {
   logo: { primary: 'Cyber', accent: 'Pedia' },
 
   organization: {
-    legalName: 'CyberPedia',
+    legalName: 'Rio Cloud Solutions',
     foundingYear: 2026,
-    email: 'editorial@cyberpedia.qd.je',
+    email: 'info@riocloudsolutions.com',
+    phone: '+91 75085 83782',
+    phoneE164: '917508583782',
+    address: {
+      locality: 'Chandigarh',
+      region: 'Chandigarh',
+      country: 'India',
+      countryCode: 'IN',
+    },
+    hours: 'Monday to Saturday, 9:00-19:00 IST',
+    hoursSpec: 'Mo-Sa 09:00-19:00',
+    responseTime: 'Typically within 2-4 hours during business hours (IST)',
     logoPath: '/logo.svg',
   },
 
+  // Only profiles that actually exist are listed — a sameAs pointing at a
+  // non-existent account is a negative trust signal, not a neutral one.
   social: {
-    twitter: 'https://twitter.com/cyberpedia',
-    twitterHandle: '@cyberpedia',
-    github: 'https://github.com/insanemr14-boop/cyberpedia',
+    instagram: 'https://instagram.com/riocloud.in',
+    linkedin: 'https://linkedin.com/company/rio-cloud-solutions',
+    whatsapp: 'https://wa.me/917508583782',
     rss: '/rss.xml',
   },
 

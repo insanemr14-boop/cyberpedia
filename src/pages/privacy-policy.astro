@@ -17,8 +17,24 @@ import { SITE } from '../config/site.config';
 
   <h2>Who we are</h2>
   <p>
-    {SITE.organization.legalName} operates <strong>{SITE.domain}</strong>. For any privacy
-    question, contact <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>.
+    <strong>{SITE.organization.legalName}</strong> is the data controller for
+    <strong>{SITE.domain}</strong>, which it operates as {SITE.name}.
+  </p>
+  <ul>
+    <li>
+      Email: <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>
+    </li>
+    <li>
+      Phone: <a href={`tel:+${SITE.organization.phoneE164}`}>{SITE.organization.phone}</a>
+    </li>
+    <li>
+      Address: {SITE.organization.address.locality}, {SITE.organization.address.country}
+    </li>
+  </ul>
+  <p>
+    Direct any privacy question, access request or complaint to the email address above.
+    Business hours are {SITE.organization.hours}. We aim to acknowledge within one business
+    day and respond substantively within 30 days.
   </p>
 
   <h2>What we collect</h2>

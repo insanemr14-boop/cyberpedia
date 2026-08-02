@@ -24,26 +24,60 @@ export const ID = {
 };
 
 export function organizationSchema() {
+  const org = SITE.organization;
+
   return {
     '@type': 'Organization',
     '@id': ID.organization,
-    name: SITE.organization.legalName,
+    name: SITE.name,
+    legalName: org.legalName,
     alternateName: SITE.shortName,
     url: SITE.url,
     description: SITE.description,
-    foundingDate: String(SITE.organization.foundingYear),
-    email: SITE.organization.email,
+    foundingDate: String(org.foundingYear),
+    email: org.email,
+    telephone: org.phone,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: org.address.locality,
+      addressRegion: org.address.region,
+      addressCountry: org.address.countryCode,
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: org.email,
+      telephone: org.phone,
+      areaServed: 'Worldwide',
+      availableLanguage: ['English', 'Hindi'],
+      hoursAvailable: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday',
+        ],
+        opens: '09:00',
+        closes: '19:00',
+      },
+    },
     logo: {
       '@type': 'ImageObject',
       '@id': `${SITE.url}/#logo`,
-      url: abs(SITE.organization.logoPath),
-      contentUrl: abs(SITE.organization.logoPath),
+      url: abs(org.logoPath),
+      contentUrl: abs(org.logoPath),
       caption: SITE.name,
     },
     image: { '@id': `${SITE.url}/#logo` },
-    sameAs: [SITE.social.twitter, SITE.social.github, SITE.social.linkedin].filter(
-      Boolean
-    ),
+    sameAs: [
+      SITE.social.instagram,
+      SITE.social.linkedin,
+      SITE.social.twitter,
+      SITE.social.github,
+    ].filter(Boolean),
   };
 }
 
