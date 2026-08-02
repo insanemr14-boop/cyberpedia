@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -21,27 +20,10 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
 
-  integrations: [
-    mdx(),
-    sitemap({
-      filter: (page) =>
-        // Search results and API stubs carry no index value.
-        !page.includes('/search') && !page.includes('/api/'),
-      changefreq: 'weekly',
-      lastmod: new Date(),
-      serialize(item) {
-        if (/\/\/[^/]+\/$/.test(item.url)) {
-          return { ...item, priority: 1.0, changefreq: 'daily' };
-        }
-        if (/\/(news|guides|reviews|articles|categories)\/$/.test(item.url)) {
-          return { ...item, priority: 0.9, changefreq: 'daily' };
-        }
-        if (item.url.includes('/articles/')) return { ...item, priority: 0.8 };
-        if (item.url.includes('/category/')) return { ...item, priority: 0.7 };
-        return { ...item, priority: 0.5 };
-      },
-    }),
-  ],
+  // The sitemap is hand-built at src/pages/sitemap.xml.ts rather than generated
+  // by @astrojs/sitemap: one clean /sitemap.xml URL, real per-article lastmod
+  // dates instead of a build timestamp, and noindex paginated pages excluded.
+  integrations: [mdx()],
 
   markdown: {
     shikiConfig: {

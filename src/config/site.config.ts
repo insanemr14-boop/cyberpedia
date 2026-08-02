@@ -194,7 +194,7 @@ export const FOOTER_NAV = [
       { label: 'Editorial Policy', href: '/editorial-policy' },
       { label: 'Contact', href: '/contact' },
       { label: 'RSS Feed', href: '/rss.xml' },
-      { label: 'Sitemap', href: '/sitemap-index.xml' },
+      { label: 'Sitemap', href: '/sitemap.xml' },
     ],
   },
   {
