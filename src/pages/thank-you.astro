@@ -1,0 +1,38 @@
+---
+/**
+ * Landing page after a successful contact-form submission.
+ *
+ * The shared lead worker 303s here once SMTP has accepted the message, so
+ * reaching this page means the enquiry was genuinely delivered.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE } from '../config/site.config';
+
+const org = SITE.organization;
+---
+
+<PageLayout
+  title="Thank you"
+  description="Your message has been received."
+  lede="Message received — we'll be in touch shortly."
+  noindex
+>
+  <p>
+    Thanks for getting in touch. Your enquiry has landed in our inbox and a real person
+    will read it.
+  </p>
+  <p>
+    We answer general and commercial enquiries
+    {org.responseTime ? ` ${org.responseTime}` : ' one business day'}
+    {org.hours ? `, ${org.hours.toLowerCase()}` : ''}. If it is urgent, email
+    <a href={`mailto:${org.email}`}>{org.email}</a>
+    {org.phone && <> or call <a href={`tel:+${org.phoneE164}`}>{org.phone}</a></>}.
+  </p>
+
+  <h2>While you're here</h2>
+  <ul>
+    <li><a href="/articles/">Latest articles</a></li>
+    <li><a href="/about/">About {SITE.name}</a></li>
+    <li><a href="/">Back to the homepage</a></li>
+  </ul>
+</PageLayout>

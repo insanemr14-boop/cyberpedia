@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import { SITE } from '../config/site.config';
+import LeadForm from '../components/LeadForm.astro';
+import FAQ from '../components/FAQ.astro';
 import { breadcrumbSchema, webPageSchema } from '../lib/schema';
 
 const org = SITE.organization;
@@ -12,6 +14,34 @@ const path = '/contact';
 const crumbs = [
   { name: 'Home', href: '/' },
   { name: 'Contact', href: '/contact/' },
+];
+
+const faqs = [
+  {
+    question: 'How quickly will I get a reply?',
+    answer:
+      'General and commercial enquiries are answered within 2\u20134 hours during business hours (Monday to Saturday, 9:00\u201319:00 IST). Security disclosures and corrections are triaged within two business days.',
+  },
+  {
+    question: 'Who operates ' + SITE.name + '?',
+    answer:
+      'It is published and operated by RioCloud Solutions, a technology and digital services company based in Chandigarh, India. The same team answers enquiries sent through this form.',
+  },
+  {
+    question: 'Do you accept paid guest posts or sponsored articles?',
+    answer:
+      'No. We do not accept paid guest posts, sponsored articles or link insertions, and we will not amend accurate published reporting on request. The reasoning is set out in our editorial policy.',
+  },
+  {
+    question: 'How should I report a vulnerability in this site?',
+    answer:
+      'Use the form or email us with a subject line beginning SECURITY. Include reproduction steps and give us a reasonable window to remediate before publishing. We credit reporters who ask to be credited.',
+  },
+  {
+    question: 'Can you help with security or infrastructure work directly?',
+    answer:
+      'Yes. Alongside publishing, RioCloud Solutions builds and secures websites and cloud infrastructure for clients. Describe what you need in the form and we will tell you honestly whether we are a good fit.',
+  },
 ];
 
 const channels = [
@@ -109,6 +139,12 @@ const channels = [
     {/* ---------- Details ---------- */}
     <div class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div class="prose">
+        <h2>Send us a message</h2>
+        <p>
+          This reaches the same inbox as the addresses above, and a person reads it.
+        </p>
+        <LeadForm subject="Enquiry from the contact page" class="mt-6 mb-10" />
+
         <h2>Editorial</h2>
         <p>
           For corrections, factual disputes, story tips or article pitches, email
@@ -221,4 +257,6 @@ const channels = [
       </aside>
     </div>
   </div>
+
+  <FAQ items={faqs} class="mx-auto mt-14 max-w-3xl px-4" />
 </BaseLayout>
