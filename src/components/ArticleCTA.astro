@@ -1,0 +1,90 @@
+---
+/**
+ * End-of-article lead capture.
+ *
+ * Rendered by ArticleLayout on every article, which is the point: before this
+ * existed the only capture point on the site was /contact/, so the pages that
+ * receive essentially all of the search traffic asked the reader for nothing.
+ *
+ * Three visible fields, deliberately. Every extra field costs conversions, and
+ * the qualifying conversation happens by email afterwards — the form only has
+ * to be worth an email address, not replace the sales call.
+ *
+ * Posts natively to the shared RioCloud lead worker, exactly as LeadForm does.
+ * A native POST is not subject to CORS, but it IS subject to `form-action` in
+ * the CSP, which must list the worker origin — see public/_headers.
+ */
+import { SITE, LEAD } from '../config/site.config';
+
+interface Props {
+  /** Article title, so the lead names the page that produced it. */
+  title: string;
+  /** Article path, recorded as the attribution source. */
+  path: string;
+  class?: string;
+}
+
+const { title, path, class: className = '' } = Astro.props;
+
+const ENDPOINT = 'https://dentistseo.dpdns.org/api/lead';
+
+const field =
+  'mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] ' +
+  'px-3 py-2 text-[var(--text)] outline-none focus:border-[var(--brand)] ' +
+  'focus:ring-2 focus:ring-[var(--ring)]/30';
+const label = 'block text-sm font-semibold text-[var(--text)]';
+---
+
+<section
+  class={`not-prose rounded-2xl border border-[var(--border)] bg-[var(--bg-alt)] p-6 sm:p-8 ${className}`}
+  aria-labelledby="article-cta-heading"
+>
+  <h2 id="article-cta-heading" class="text-xl font-bold text-[var(--text)] sm:text-2xl">
+    {LEAD.heading}
+  </h2>
+  <p class="mt-2 max-w-2xl text-[var(--text-muted)]">{LEAD.blurb}</p>
+
+  <form method="POST" action={ENDPOINT} class="mt-6">
+    <input type="hidden" name="site" value={SITE.url} />
+    <input type="hidden" name="redirect" value={`${SITE.url}/thank-you/`} />
+    {/* Attribution: which article produced this lead. Without it every lead
+        arrives as "someone, somewhere" and no article can be credited. */}
+    <input type="hidden" name="source" value={path} />
+    <input type="hidden" name="subject" value={`${LEAD.subject} — ${title}`} />
+
+    {/* Honeypot — hidden from people, irresistible to bots. */}
+    <div class="absolute left-[-9999px]" aria-hidden="true">
+      <label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class={label} for="cta-name">Your name</label>
+        <input class={field} id="cta-name" name="name" type="text" required autocomplete="name" />
+      </div>
+      <div>
+        <label class={label} for="cta-email">Work email</label>
+        <input class={field} id="cta-email" name="email" type="email" required autocomplete="email" />
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <label class={label} for="cta-message">{LEAD.prompt}</label>
+      <textarea class={field} id="cta-message" name="message" rows="3" required></textarea>
+    </div>
+
+    <button
+      type="submit"
+      class="mt-5 inline-flex items-center justify-center rounded-xl bg-[var(--brand)]
+             px-5 py-2.5 font-semibold text-[var(--brand-contrast)] transition
+             hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--ring)]/40"
+    >
+      {LEAD.button}
+    </button>
+
+    <p class="mt-3 text-sm text-[var(--text-muted)]">
+      No newsletter, no sales sequence. A person reads it and replies. See the
+      <a href="/privacy-policy/" class="underline">privacy policy</a>.
+    </p>
+  </form>
+</section>

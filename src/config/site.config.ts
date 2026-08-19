@@ -264,3 +264,21 @@ export const CONTENT_TYPES = {
 } as const;
 
 export type ContentType = keyof typeof CONTENT_TYPES;
+
+/**
+ * End-of-article lead offer.
+ *
+ * Separate from SITE because it is commercial copy, not site identity: the
+ * articles exist to earn AdSense revenue AND to produce qualified enquiries for
+ * RioCloud Solutions, and this is the second half of that. Matched to the
+ * niche — a reader who just finished a hardening guide is offered a review of
+ * their own posture, not a generic "book a call".
+ */
+export const LEAD = {
+  heading: 'Want this checked against your own environment?',
+  blurb:
+    'We run security posture reviews for engineering teams — cloud config, access control, CI/CD and the gaps between them. Tell us what you are running and we will tell you where we would look first. No charge for the conversation.',
+  prompt: 'What are you running, and what worries you most?',
+  button: 'Request a posture review',
+  subject: 'Security posture enquiry',
+} as const;

@@ -14,6 +14,7 @@ import Share from '../components/Share.astro';
 import AuthorBlock from '../components/Author.astro';
 import FAQ from '../components/FAQ.astro';
 import RelatedArticles from '../components/RelatedArticles.astro';
+import ArticleCTA from '../components/ArticleCTA.astro';
 import Newsletter from '../components/Newsletter.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import { SITE, CONTENT_TYPES } from '../config/site.config';
@@ -184,6 +185,9 @@ const crumbs = [
         <div class="prose mt-10" data-article-body data-pagefind-body>
           <slot />
         </div>
+
+        {/* ---------- Lead capture ---------- */}
+        <ArticleCTA title={data.title} path={`${path}/`} class="mt-12" />
 
         {/* ---------- Tags ---------- */}
         {
