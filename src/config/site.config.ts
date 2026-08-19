@@ -176,6 +176,7 @@ export const MAIN_NAV = [
   { label: 'Reviews', href: '/reviews/' },
   { label: 'Categories', href: '/categories/' },
   { label: 'Articles', href: '/articles/' },
+  { label: 'Contact', href: '/contact/' },
 ] as const;
 
 /** Footer link groups. */
