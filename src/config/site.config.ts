@@ -99,8 +99,8 @@ export interface SiteConfig {
 export const SITE: SiteConfig = {
   name: 'CyberPedia',
   shortName: 'CyberPedia',
-  domain: 'cyberpedia.qd.je',
-  url: 'https://cyberpedia.qd.je',
+  domain: 'cyberpedia.dpdns.org',
+  url: 'https://cyberpedia.dpdns.org',
   tagline: 'Cybersecurity, explained properly.',
   description:
     'CyberPedia publishes in-depth cybersecurity analysis, threat intelligence, defensive guides and security tooling reviews for engineers and defenders.',

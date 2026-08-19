@@ -11,7 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
  * the sitemap and RSS — it must match the production domain exactly.
  */
 export default defineConfig({
-  site: 'https://cyberpedia.qd.je',
+  site: 'https://cyberpedia.dpdns.org',
   output: 'static',
 
   build: {
