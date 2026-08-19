@@ -53,6 +53,12 @@ const isProd = import.meta.env.PROD;
   <script is:inline defer src="/analytics/clarity.js" data-clarity-id={microsoftClarityId} />
 )}
 
+{/* AdSense site verification. The script tag below is itself sufficient,
+    but AdSense also accepts this meta tag and checks for either — carrying both
+    removes a failure mode during review, and the meta tag survives a visitor
+    with an ad blocker that strips the script. */}
+{adsenseClientId && <meta name="google-adsense-account" content={`ca-${adsenseClientId}`} />}
+
 {/* ---------- Google AdSense ----------
     Loaded site-wide so the crawler finds the tag on every page, which is what
     the review process checks for. Ad units themselves are placed by AdSense
