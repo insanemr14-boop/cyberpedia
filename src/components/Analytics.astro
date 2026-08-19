@@ -16,6 +16,12 @@ const { googleAnalyticsId, microsoftClarityId, cloudflareAnalyticsToken, adsense
 const isProd = import.meta.env.PROD;
 ---
 
+{/* ---------- Cookie consent + Google Consent Mode v2 ----------
+    Deliberately NOT async/defer and deliberately first: the consent default
+    must already be in dataLayer when gtag.js and adsbygoogle.js initialise,
+    otherwise the first page view is measured under the wrong consent state. */}
+<script is:inline src="/consent.js" data-policy="/privacy-policy/"></script>
+
 {/* ---------- Cloudflare Web Analytics ---------- */}
 {isProd && cloudflareAnalyticsToken && (
   <script
