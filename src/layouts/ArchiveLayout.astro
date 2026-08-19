@@ -8,6 +8,7 @@
  * layout duplication.
  */
 import BaseLayout from './BaseLayout.astro';
+import ArticleCTA from '../components/ArticleCTA.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import Pagination from '../components/Pagination.astro';
@@ -162,4 +163,5 @@ const next = currentPage < lastPage ? `${canonicalBase}/${currentPage + 1}/` : u
       )
     }
   </div>
+  <ArticleCTA title={title} path={Astro.url.pathname} class="mx-auto mt-16 max-w-5xl" />
 </BaseLayout>
