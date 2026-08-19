@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCTA from '../components/ArticleCTA.astro';
 import Hero from '../components/Hero.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import CategoryCard from '../components/CategoryCard.astro';
@@ -170,4 +171,5 @@ const featuredCategories = [
       </div>
     </section>
   </div>
+  <ArticleCTA title={SITE.name} path={'/'} class="mx-auto mt-16 max-w-5xl px-4 sm:px-6" />
 </BaseLayout>
