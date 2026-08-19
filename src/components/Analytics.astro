@@ -10,7 +10,7 @@
  */
 import { SITE } from '../config/site.config';
 
-const { googleAnalyticsId, microsoftClarityId, cloudflareAnalyticsToken } =
+const { googleAnalyticsId, microsoftClarityId, cloudflareAnalyticsToken, adsenseClientId } =
   SITE.analytics;
 
 const isProd = import.meta.env.PROD;
@@ -45,4 +45,17 @@ const isProd = import.meta.env.PROD;
 {/* ---------- Microsoft Clarity ---------- */}
 {isProd && microsoftClarityId && (
   <script is:inline defer src="/analytics/clarity.js" data-clarity-id={microsoftClarityId} />
+)}
+
+{/* ---------- Google AdSense ----------
+    Loaded site-wide so the crawler finds the tag on every page, which is what
+    the review process checks for. Ad units themselves are placed by AdSense
+    Auto ads, so no per-page markup is needed. */}
+{isProd && adsenseClientId && (
+  <script
+    is:inline
+    async
+    crossorigin="anonymous"
+    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${adsenseClientId}`}
+  />
 )}

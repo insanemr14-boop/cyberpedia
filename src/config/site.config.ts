@@ -70,6 +70,8 @@ export interface SiteConfig {
     microsoftClarityId: string;
     /** Cloudflare Web Analytics beacon token. */
     cloudflareAnalyticsToken: string;
+    /** AdSense publisher ID, e.g. "pub-0000000000000000". Empty disables ads. */
+    adsenseClientId: string;
   };
   /** Newsletter provider endpoint. Wired to `/api/newsletter` placeholder. */
   newsletter: {
@@ -141,6 +143,7 @@ export const SITE: SiteConfig = {
     googleSearchConsoleVerification: 'REfhXaG6pnK53a3U7-XFJfPqEamF7fDx1AY0_a7zviM',
     microsoftClarityId: '',
     cloudflareAnalyticsToken: '',
+    adsenseClientId: 'pub-2164822493055530',
   },
 
   newsletter: {
