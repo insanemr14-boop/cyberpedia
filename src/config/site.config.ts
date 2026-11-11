@@ -147,7 +147,7 @@ export const SITE: SiteConfig = {
     ],
     microsoftClarityId: '',
     cloudflareAnalyticsToken: '',
-    adsenseClientId: 'pub-2164822493055530',
+    adsenseClientId: 'pub-3353662240978727',
   },
 
   newsletter: {
