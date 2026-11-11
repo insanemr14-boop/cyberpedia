@@ -134,12 +134,9 @@ const metaKeywords = keywords.length ? keywords.join(', ') : undefined;
 )}
 
 {/* ---------- Search Console ---------- */}
-{SITE.analytics.googleSearchConsoleVerification && (
-  <meta
-    name="google-site-verification"
-    content={SITE.analytics.googleSearchConsoleVerification}
-  />
-)}
+{SITE.analytics.googleSearchConsoleVerification.map((token) => (
+  <meta name="google-site-verification" content={token} />
+))}
 
 {/* ---------- Fonts ----------
     Preconnect before the stylesheet so the TLS handshake overlaps HTML parse.

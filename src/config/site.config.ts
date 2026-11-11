@@ -66,7 +66,8 @@ export interface SiteConfig {
    */
   analytics: {
     googleAnalyticsId: string;
-    googleSearchConsoleVerification: string;
+    /** One token per Search Console account that verifies this site. */
+    googleSearchConsoleVerification: string[];
     microsoftClarityId: string;
     /** Cloudflare Web Analytics beacon token. */
     cloudflareAnalyticsToken: string;
@@ -140,7 +141,10 @@ export const SITE: SiteConfig = {
   // Populate these to activate the corresponding provider. Empty = disabled.
   analytics: {
     googleAnalyticsId: 'G-TDD0MM4TM7',
-    googleSearchConsoleVerification: 'REfhXaG6pnK53a3U7-XFJfPqEamF7fDx1AY0_a7zviM',
+    googleSearchConsoleVerification: [
+      'REfhXaG6pnK53a3U7-XFJfPqEamF7fDx1AY0_a7zviM',
+      'w8zoMBao-03aGjF3tu49H6_6xJZD_mEMyQjRke4ll3g',
+    ],
     microsoftClarityId: '',
     cloudflareAnalyticsToken: '',
     adsenseClientId: 'pub-2164822493055530',
