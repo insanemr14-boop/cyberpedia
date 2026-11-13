@@ -36,7 +36,7 @@ export function organizationSchema() {
     description: SITE.description,
     foundingDate: String(org.foundingYear),
     email: org.email,
-    telephone: org.phone,
+    ...(org.phone && { telephone: org.phone }),
     address: {
       '@type': 'PostalAddress',
       addressLocality: org.address.locality,
@@ -47,7 +47,7 @@ export function organizationSchema() {
       '@type': 'ContactPoint',
       contactType: 'customer support',
       email: org.email,
-      telephone: org.phone,
+      ...(org.phone && { telephone: org.phone }),
       areaServed: 'Worldwide',
       availableLanguage: ['English', 'Hindi'],
       hoursAvailable: {

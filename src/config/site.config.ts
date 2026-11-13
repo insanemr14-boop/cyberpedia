@@ -115,8 +115,8 @@ export const SITE: SiteConfig = {
     legalName: 'Rio Cloud Solutions',
     foundingYear: 2026,
     email: 'info@riocloudsolutions.com',
-    phone: '+91 75085 83782',
-    phoneE164: '917508583782',
+    phone: '',
+    phoneE164: '',
     address: {
       locality: 'Chandigarh',
       region: 'Chandigarh',
@@ -134,7 +134,6 @@ export const SITE: SiteConfig = {
   social: {
     instagram: 'https://instagram.com/riocloud.in',
     linkedin: 'https://linkedin.com/company/rio-cloud-solutions',
-    whatsapp: 'https://wa.me/917508583782',
     rss: '/rss.xml',
   },
 

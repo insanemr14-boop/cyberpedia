@@ -24,9 +24,11 @@ import { SITE } from '../config/site.config';
     <li>
       Email: <a href={`mailto:${SITE.organization.email}`}>{SITE.organization.email}</a>
     </li>
-    <li>
-      Phone: <a href={`tel:+${SITE.organization.phoneE164}`}>{SITE.organization.phone}</a>
-    </li>
+    {SITE.organization.phone && (
+      <li>
+        Phone: <a href={`tel:+${SITE.organization.phoneE164}`}>{SITE.organization.phone}</a>
+      </li>
+    )}
     <li>
       Address: {SITE.organization.address.locality}, {SITE.organization.address.country}
     </li>

@@ -117,12 +117,14 @@ const footerCategories = CATEGORIES.slice(0, 10);
           >
             {SITE.organization.email}
           </a>
-          <a
-            href={`tel:+${SITE.organization.phoneE164}`}
-            class="block transition-colors hover:text-[var(--color-primary)]"
-          >
-            {SITE.organization.phone}
-          </a>
+          {SITE.organization.phone && (
+            <a
+              href={`tel:+${SITE.organization.phoneE164}`}
+              class="block transition-colors hover:text-[var(--color-primary)]"
+            >
+              {SITE.organization.phone}
+            </a>
+          )}
           <span class="block">
             {SITE.organization.address.locality}, {SITE.organization.address.country}
           </span>
